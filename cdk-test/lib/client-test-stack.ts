@@ -4,7 +4,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-
+import { HelloClientConstruct } from '@hellocoop/cdk-client'
 
 // TODO
 // check function.zip exists
@@ -13,6 +13,8 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 export class ClientTestStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    const helloClient = new 
 
     // Define the Lambda function
     const helloLambda = new lambda.Function(this, 'HelloCoop', {

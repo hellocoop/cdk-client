@@ -1,17 +1,19 @@
 # Dependency directories
 node_modules/
 
+@ build directory
+dist/*
+!dist/.gitkeep
+
+
 # Optional npm cache directory
 .npm
 
 # Optional eslint cache
 .eslintcache
 
-# dotenv environment variable files
-.env
-
-# lamda zip files
-*.zip
 
 # Apple search
 .DS_Store
+
+#
