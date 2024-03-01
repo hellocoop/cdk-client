@@ -16,9 +16,9 @@ import { serialize } from 'cookie'
 // Load environment variables
 const { CLIENT_ID, HELLO_COOKIE_SECRET } = process.env;
 // Load configuration
-const config: Config = require('./hello.config.js')
+// const config: Config = require('./hello.config.js')
 if (!isConfigured)
-  configure(config)
+  configure({})
 
 const convertToHelloRequest = (event: APIGatewayProxyEventV2 ): HelloRequest => {
   const { headers, cookies, queryStringParameters, requestContext } = event
