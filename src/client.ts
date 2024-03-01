@@ -5,6 +5,7 @@ import { Construct } from 'constructs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as crypto from 'crypto';
+import * as path from 'path';
 
 
 export interface HelloClientConstructProps {
@@ -13,6 +14,8 @@ export interface HelloClientConstructProps {
   loginTriggerFunctionName?: string;
   loginTriggerFunctionArn?: string;
 }
+
+const zipFilePath = path.join(__dirname, 'protocol.zip');
 
 export class HelloClientConstruct extends Construct {
     // Public properties to expose the Lambda function and URL
@@ -33,7 +36,7 @@ export class HelloClientConstruct extends Construct {
           functionName: 'HelloClient',
           runtime: lambda.Runtime.NODEJS_20_X, 
           handler: 'index.handler',
-          code: lambda.Code.fromAsset('../protocol.zip'), 
+          code: lambda.Code.fromAsset(zipFilePath), 
           environment: {
             HELLO_COOKIE_SECRET: props.cookieSecret || crypto.randomBytes(32).toString('hex'),
             HELLO_CLIENT_ID: props.clientID,
