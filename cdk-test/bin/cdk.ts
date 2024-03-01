@@ -4,4 +4,5 @@ import { ClientTestStack } from '../lib/client-test-stack';
 
 
 const app = new cdk.App();
-new ClientTestStack(app, 'ClientTestStack');
+const test = new ClientTestStack(app, 'ClientTestStack');
+

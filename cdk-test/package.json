@@ -5,7 +5,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "cdk": "cdk",
-    "test": "npm install @hellocoop/cdk-client@canary && npm run build && cdk synth && cdk deploy"
+    "test": "npm install @hellocoop/cdk-client@canary && npm run build && cdk deploy"
   },
   "devDependencies": {
     "@types/node": "20.11.19",
@@ -14,7 +14,7 @@
     "typescript": "~5.3.3"
   },
   "dependencies": {
-    "@hellocoop/cdk-client": "^1.0.4-canary.1",
+    "@hellocoop/cdk-client": "^1.0.4-canary.2",
     "aws-cdk-lib": "2.130.0",
     "constructs": "^10.0.0",
     "source-map-support": "^0.5.21"

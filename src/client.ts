@@ -57,10 +57,9 @@ export class HelloClientConstruct extends Construct {
           }));
         }  
 
-        const functionUrl = this.lambdaFunction.addFunctionUrl({
+        this.url = this.lambdaFunction.addFunctionUrl({
           authType: lambda.FunctionUrlAuthType.NONE, // Publicly accessible
-        })
-        this.url = functionUrl.url
+        }).url
 
         // TODO - add in the authorize lambda function 
 

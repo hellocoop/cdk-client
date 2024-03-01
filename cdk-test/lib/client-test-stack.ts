@@ -15,8 +15,10 @@ export class ClientTestStack extends cdk.Stack {
     const helloClient = new HelloClientConstruct(this, 'HelloClient', {
       clientID: 'TBD',
     });
-
-    console.log('HelloClient URL:', helloClient.url);
+    
+    new cdk.CfnOutput(this, 'HelloClientFunctionName', { value: helloClient.lambdaFunction.functionName });
+    new cdk.CfnOutput(this, 'HelloClientFunctionArn', { value: helloClient.lambdaFunction.functionArn });
+    new cdk.CfnOutput(this, 'HelloClientURL', { value: helloClient.url });
 
   }
 }
