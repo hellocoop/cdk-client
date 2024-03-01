@@ -39,7 +39,7 @@
     "install-cdk-test": "cd cdk-test && npm install",
     "install-authorize": "cd authorize && npm install",
     "install-all": "npm install && npm run install-protocol && npm run install-cdk-test && npm run install-authorize",
-    "canary": "npm run build && npm version prepatch --preid canary && npm publish --tag canary"
+    "canary": "npm run build && npm version prerelease --preid=canary && npm publish --tag=canary"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.134",
