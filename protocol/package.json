@@ -1,0 +1,42 @@
+{
+  "name": "@hellocoop/lambda",
+  "version": "1.0.0",
+  "description": "Lambda SDK for Hellō https://hello.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hellocoop/lambda-node.git"
+  },
+  "homepage": "https://www.hello.dev/docs/sdks/lambda",
+  "keywords": [
+    "lambda",
+    "nodejs",
+    "node.js",
+    "hello",
+    "openid",
+    "oidc",
+    "sso",
+    "lambda"
+  ],
+  "author": {
+    "name": "Hello Identity Co-op",
+    "email": "contact@hello.coop",
+    "url": "https://hello.coop"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hellocoop/packages/issues"
+  },
+  "scripts": {
+    "build": "npx tsc && zip -q -r ../dist/protocol.zip . -i '*.js' -i '*.json'"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@hellocoop/router": "*",
+    "cookie": "^0.6.0"
+  },
+  "devDependencies": {
+    "@types/cookie": "^0.6.0"
+  }
+}

@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+      "target": "es2020",
+      "module": "commonjs",
+      "strict": true,
+      "esModuleInterop": true,
+      "skipLibCheck": true,
+      "forceConsistentCasingInFileNames": true
+    },
+    "include": ["./index.ts"], // Specifically include only index.ts if it's the only file
+    "exclude": ["./node_modules"] // Exclude the custom node_modules directory within src
+}
+  

@@ -1,6 +1,6 @@
 {
   "name": "@hellocoop/cdk-client",
-  "version": "1.0.1-0",
+  "version": "1.0.1-0-canary",
   "description": "Hellō Client CDK Construct https://hello.dev",
   "repository": {
     "type": "git",
@@ -38,8 +38,8 @@
     "install-protocol": "cd protocol && npm install",
     "install-cdk-test": "cd cdk-test && npm install",
     "install-authorize": "cd authorize && npm install",
-    "install": "npm run install-protocol && npm run install-cdk-test && npm run install-authorize",
-    "canary": "npm run build && npm version prepatch --preid && npm publish --tag canary"
+    "install-all": "npm install && npm run install-protocol && npm run install-cdk-test && npm run install-authorize",
+    "canary": "npm run build && npm version prepatch --preid canary && npm publish --tag canary"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.134",
