@@ -5,7 +5,8 @@
     "build": "tsc",
     "watch": "tsc -w",
     "cdk": "cdk",
-    "test": "npm install @hellocoop/cdk-client@canary && npm run build && cdk deploy"
+    "test": "npm install @hellocoop/cdk-client@canary && npm run build && cdk deploy",
+    "tail": "aws logs tail /aws/lambda/HelloClient --follow"
   },
   "devDependencies": {
     "@types/node": "20.11.19",
