@@ -16,4 +16,5 @@ dist/*
 # Apple search
 .DS_Store
 
-#
+# built files
+*.js
