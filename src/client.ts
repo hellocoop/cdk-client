@@ -21,6 +21,7 @@ export class HelloClientConstruct extends Construct {
     // Public properties to expose the Lambda function and URL
     public readonly lambdaFunction: lambda.Function;
     public readonly url: string;
+    public readonly hostname: string;
 
     constructor(scope: Construct, id: string, props: HelloClientConstructProps) {
         super(scope, id);
@@ -60,6 +61,8 @@ export class HelloClientConstruct extends Construct {
         this.url = this.lambdaFunction.addFunctionUrl({
           authType: lambda.FunctionUrlAuthType.NONE, // Publicly accessible
         }).url
+
+        this.hostname = new URL(this.url).hostname
 
         // TODO - add in the authorize lambda function 
 
