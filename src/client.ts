@@ -20,8 +20,7 @@ const zipFilePath = path.join(__dirname, 'protocol.zip');
 export class HelloClientConstruct extends Construct {
     // Public properties to expose the Lambda function and URL
     public readonly lambdaFunction: lambda.Function;
-    public readonly url: string;
-    public readonly hostname: string;
+    public readonly functionUrl: lambda.FunctionUrl;
 
     constructor(scope: Construct, id: string, props: HelloClientConstructProps) {
         super(scope, id);
@@ -58,15 +57,9 @@ export class HelloClientConstruct extends Construct {
           }));
         }  
 
-        this.url = this.lambdaFunction.addFunctionUrl({
+        this.functionUrl = this.lambdaFunction.addFunctionUrl({
           authType: lambda.FunctionUrlAuthType.NONE, // Publicly accessible
-        }).url
-
-        // const url = new URL(this.url);
-
-        this.hostname = 'test.com' // url.hostname
-
-        // TODO - add in the authorize lambda function 
+        })
 
     }
 }
