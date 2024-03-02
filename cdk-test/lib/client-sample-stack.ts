@@ -27,7 +27,7 @@ export class ClientSampleStack extends cdk.Stack {
     const helloClient = new HelloClientConstruct(this, 'HelloClient', {
       clientID: CLIENT_ID,
       redirectURI: REDIRECT_URI,
-      preferredProviders: ['google'],
+      providerHints: ['google'],
       scopes: ['email', 'name'],
     });
 
