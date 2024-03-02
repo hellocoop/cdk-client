@@ -19,7 +19,7 @@ import { HelloClientConstruct } from '@hellocoop/cdk-client'
 
 
 const DOMAIN = 'hello-beta.net'
-const HOSTNAME = 'client-test.'+DOMAIN
+const HOSTNAME = 'client-test.' + DOMAIN
 const CLIENT_ID = 'TBD'
 
 
@@ -31,9 +31,10 @@ export class ClientSampleStack extends cdk.Stack {
       clientID: CLIENT_ID,
     });
 
+
     // create a certificate
-    const zone = HostedZone.fromLookup(this, "zone", {domainName: DOMAIN})
-    const certificate = new DnsValidatedCertificate( this, 'cert', {
+    const zone = HostedZone.fromLookup(this, "zone", { domainName: DOMAIN })
+    const certificate = new DnsValidatedCertificate(this, 'cert', {
       domainName: HOSTNAME,
       region: 'us-east-1', // for CloudFront
       validation: CertificateValidation.fromDns(zone),
@@ -52,41 +53,45 @@ export class ClientSampleStack extends cdk.Stack {
       destinationBucket: bucket,
     });
 
+
     // Create a CloudFront distribution
     const distribution = new cf.Distribution(this, 'distribution', {
       domainNames: [HOSTNAME],
       certificate: certificate,
       defaultRootObject: 'index.html',
       priceClass: cf.PriceClass.PRICE_CLASS_100,
-      defaultBehavior: { 
+      defaultBehavior: {
         origin: new origins.S3Origin(bucket),
         viewerProtocolPolicy: cf.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         allowedMethods: cf.AllowedMethods.ALLOW_GET_HEAD,
       },
       additionalBehaviors: {
         '/api/hellocoop': {
-          origin: new origins.HttpOrigin(helloClient.hostname, {
-            protocolPolicy: cf.OriginProtocolPolicy.HTTPS_ONLY,
-          }),
+          origin: new origins.FunctionUrlOrigin(helloClient.functionUrl),
           viewerProtocolPolicy: cf.ViewerProtocolPolicy.HTTPS_ONLY,
           allowedMethods: cf.AllowedMethods.ALLOW_ALL,
+          cachePolicy: cf.CachePolicy.CACHING_DISABLED,
+          originRequestPolicy: new cf.OriginRequestPolicy(this, 'hellocoop', {
+            queryStringBehavior: cf.OriginRequestQueryStringBehavior.all(),
+          }),
         },
       }
-    }); 
+    });
 
     // Create a Route 53 A record to the CloudFront distribution
     new route53.ARecord(this, 'record', {
-      zone: zone, 
-      recordName: HOSTNAME, 
+      zone: zone,
+      recordName: HOSTNAME,
       target: route53.RecordTarget.fromAlias(
         new route53Targets.CloudFrontTarget(distribution)
       )
-    }) 
+    })
 
     // Output what we have created
     new cdk.CfnOutput(this, 'DistributionId', { value: distribution.distributionId });
     new cdk.CfnOutput(this, 'BucketName', { value: bucket.bucketName });
     new cdk.CfnOutput(this, 'WebsiteURL', { value: 'https://' + HOSTNAME });
-
+    new cdk.CfnOutput(this, 'HelloClientLambdaUrl', { value: helloClient.functionUrl.url });
+    new cdk.CfnOutput(this, 'HelloClientLambdaArn', { value: helloClient.lambdaFunction.functionArn });
   }
 }
