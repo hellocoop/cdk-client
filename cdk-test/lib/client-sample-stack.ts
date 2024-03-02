@@ -13,15 +13,12 @@ import * as route53Targets from 'aws-cdk-lib/aws-route53-targets';
 
 import { HelloClientConstruct } from '@hellocoop/cdk-client'
 
-// TODO
-// check function.zip exists
-// set redirect_uri env var if in production
-
 
 const DOMAIN = 'hello-beta.net'
 const HOSTNAME = 'client-test.' + DOMAIN
 const CLIENT_ID = '2000a054-aa09-45a3-9f62-26e03ee9dc76'
-
+const HELLO_PATH = '/api/hellocoop'
+const REDIRECT_URI = `https://${HOSTNAME}/${HELLO_PATH}`
 
 export class ClientSampleStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -29,6 +26,9 @@ export class ClientSampleStack extends cdk.Stack {
 
     const helloClient = new HelloClientConstruct(this, 'HelloClient', {
       clientID: CLIENT_ID,
+      redirectURI: REDIRECT_URI,
+      preferredProviders: ['google'],
+      scopes: ['email', 'name'],
     });
 
 
