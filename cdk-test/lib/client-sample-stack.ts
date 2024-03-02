@@ -1,8 +1,9 @@
-// ClientTestStack
+// ClientSampleStack is a CDK stack that creates Hello Client Lambda function and then shows how it can be used 
+// in a CloudFront distribution with an S3 bucket
 
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { DnsValidatedCertificate, CertificateValidation } from 'aws-cdk-lib/aws-certificatemanager';
+import { CertificateValidation } from 'aws-cdk-lib/aws-certificatemanager';
 import { HostedZone } from 'aws-cdk-lib/aws-route53';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
@@ -10,6 +11,10 @@ import * as cf from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from "aws-cdk-lib/aws-cloudfront-origins";
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as route53Targets from 'aws-cdk-lib/aws-route53-targets';
+// DnsValidatedCertificate has been marked deprecated, but no simple alternative is available
+// so still using it for now
+// see https://github.com/aws/aws-cdk/issues/25343
+import { DnsValidatedCertificate } from 'aws-cdk-lib/aws-certificatemanager';
 
 import { HelloClientConstruct } from '@hellocoop/cdk-client'
 
@@ -23,6 +28,7 @@ export class ClientSampleStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    // Create the Hello Client Lambda and functionUrl
     const helloClient = new HelloClientConstruct(this, 'HelloClient', {
       clientID: CLIENT_ID,
       route: HELLO_API_ROUTE,
@@ -30,7 +36,6 @@ export class ClientSampleStack extends cdk.Stack {
       providerHints: ['google'],
       scopes: ['email', 'name'],
     });
-
 
     // create a certificate
     const zone = HostedZone.fromLookup(this, "zone", { domainName: DOMAIN })
@@ -57,7 +62,7 @@ export class ClientSampleStack extends cdk.Stack {
     // Create a CloudFront distribution
     const distribution = new cf.Distribution(this, 'distribution', {
       domainNames: [HOSTNAME],
-      certificate: certificate,
+      certificate,
       defaultRootObject: 'index.html',
       priceClass: cf.PriceClass.PRICE_CLASS_100,
       defaultBehavior: {

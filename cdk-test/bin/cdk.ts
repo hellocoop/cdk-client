@@ -7,5 +7,6 @@ const region = process.env.CDK_DEFAULT_REGION
 const env = { account, region }
 
 const app = new cdk.App();
-const test = new ClientSampleStack(app, 'HelloClientSampleStack', { env });
+
+new ClientSampleStack(app, 'HelloClientSampleStack', { env });
 
