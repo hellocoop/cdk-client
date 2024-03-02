@@ -43,6 +43,7 @@ export class ClientSampleStack extends cdk.Stack {
     // Create a S3 bucket
     const bucket = new s3.Bucket(this, 'bucket', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
     });
 
     // Upload a index.html to the S3 bucket
