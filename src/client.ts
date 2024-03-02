@@ -62,7 +62,10 @@ export class HelloClientConstruct extends Construct {
           authType: lambda.FunctionUrlAuthType.NONE, // Publicly accessible
         }).url
 
-        this.hostname = new URL(this.url).hostname
+        console.log('URL:', this.url);
+        
+        const url = new URL(this.url);
+        this.hostname = url.hostname
 
         // TODO - add in the authorize lambda function 
 
