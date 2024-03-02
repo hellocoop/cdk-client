@@ -100,7 +100,7 @@ const handler = async (event: APIGatewayProxyEventV2, context: Context): Promise
   const helloRes = convertToHelloResponse(result);
   await router(helloReq, helloRes)
 
-
+  console.log('environment', JSON.stringify(process.env, null, 2));
   console.log('configuration', JSON.stringify(configuration, null, 2));
   console.log('result', JSON.stringify(result, null, 2));
   
