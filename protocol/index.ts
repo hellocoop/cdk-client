@@ -9,6 +9,7 @@ import {
   isConfigured,
   configure,
   Config,
+  configuration,
 } from '@hellocoop/router';
 
 import { serialize } from 'cookie'
@@ -99,6 +100,8 @@ const handler = async (event: APIGatewayProxyEventV2, context: Context): Promise
   const helloRes = convertToHelloResponse(result);
   await router(helloReq, helloRes)
 
+
+  console.log('configuration', JSON.stringify(configuration, null, 2));
   console.log('result', JSON.stringify(result, null, 2));
   
   return result
