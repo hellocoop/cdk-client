@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HelloCoop Example</title>
+</head>
+<body>
+    <div id="content"></div>
+
+    <script>
+        // Function to call the auth API and process the response
+        function checkAuth() {
+            fetch('/api/hellocoop?op=auth')
+                .then(response => response.json())
+                .then(data => {
+                    const contentDiv = document.getElementById('content');
+                    if (!data.isLoggedIn) {
+                        // User is not logged in, show the Hello button
+                        contentDiv.innerHTML = `<button onclick="login()">Hellō</button>`;
+                    } else {
+                        // User is logged in, show the properties and logout link
+                        let propertiesHtml = 'You are logged in. <br>';
+                        for (const [key, value] of Object.entries(data)) {
+                            propertiesHtml += `${key}: ${value}<br>`;
+                        }
+                        propertiesHtml += `<a href="/api/hellocoop?op=logout">logout</a>`;
+                        contentDiv.innerHTML = propertiesHtml;
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Function to handle login
+        function login() {
+            window.location.href = '/api/hellocoop?op=login';
+        }
+
+        // Check auth status on page load
+        window.onload = checkAuth;
+    </script>
+</body>
+</html>
