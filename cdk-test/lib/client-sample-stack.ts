@@ -20,7 +20,7 @@ import { HelloClientConstruct } from '@hellocoop/cdk-client'
 
 const DOMAIN = 'hello-beta.net'
 const HOSTNAME = 'client-test.' + DOMAIN
-const CLIENT_ID = 'TBD'
+const CLIENT_ID = '2000a054-aa09-45a3-9f62-26e03ee9dc76'
 
 
 export class ClientSampleStack extends cdk.Stack {
@@ -73,6 +73,7 @@ export class ClientSampleStack extends cdk.Stack {
           cachePolicy: cf.CachePolicy.CACHING_DISABLED,
           originRequestPolicy: new cf.OriginRequestPolicy(this, 'hellocoop', {
             queryStringBehavior: cf.OriginRequestQueryStringBehavior.all(),
+            cookieBehavior: cf.OriginRequestCookieBehavior.all(),
           }),
         },
       }
