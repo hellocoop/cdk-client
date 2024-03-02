@@ -15,7 +15,8 @@ export interface HelloClientConstructProps {
   loginTriggerFunctionName?: string;
   loginTriggerFunctionArn?: string;
   functionName?: string;
-  redirectURI?: string;
+  hostname?: string;
+  route?: string;
   providerHints?: ProviderHint[];
   scopes?: Scope[];
   sameSiteStrict?: boolean;
@@ -44,8 +45,10 @@ export class HelloClientConstruct extends Construct {
         }
         if (loginTriggerFunctionArn)
           environment['LOGIN_TRIGGER_FUNCTION_ARN'] = loginTriggerFunctionArn
-        if (props.redirectURI) 
-          environment['HELLO_REDIRECT_URI'] = props.redirectURI
+        if (props.hostname) 
+          environment['HELLO_HOST'] = props.hostname
+        if (props.route) 
+          environment['HELLO_API_ROUTE'] = props.route
         if (props.providerHints)
           environment['HELLO_PROVIDER_HINTS'] = props.providerHints.join(' ')
         if (props.scopes)
