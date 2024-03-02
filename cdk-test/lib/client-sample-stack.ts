@@ -64,7 +64,7 @@ export class ClientSampleStack extends cdk.Stack {
       },
       additionalBehaviors: {
         '/api/hellocoop': {
-          origin: new origins.HttpOrigin(helloClient.url, {
+          origin: new origins.HttpOrigin(helloClient.hostname, {
             protocolPolicy: cf.OriginProtocolPolicy.HTTPS_ONLY,
           }),
           viewerProtocolPolicy: cf.ViewerProtocolPolicy.HTTPS_ONLY,
