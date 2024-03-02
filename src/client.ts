@@ -6,6 +6,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as crypto from 'crypto';
 import * as path from 'path';
+import { Scope, ProviderHint} from '@hellocoop/types'
 
 
 export interface HelloClientConstructProps {
@@ -13,6 +14,12 @@ export interface HelloClientConstructProps {
   cookieSecret?: string;
   loginTriggerFunctionName?: string;
   loginTriggerFunctionArn?: string;
+  functionName?: string;
+  redirectURI?: string;
+  providerHints?: ProviderHint[];
+  scopes?: Scope[];
+  sameSiteStrict?: boolean;
+  cookieToken?: boolean;
 }
 
 const zipFilePath = path.join(__dirname, 'protocol.zip');
@@ -31,17 +38,30 @@ export class HelloClientConstruct extends Construct {
           || ( props.loginTriggerFunctionName
                 ? `arn:aws:lambda:${region}:${account}:function:${props.loginTriggerFunctionName}`
                 : null )
+        const environment:{[key: string]: string;} = {
+          HELLO_COOKIE_SECRET: props.cookieSecret || crypto.randomBytes(32).toString('hex'),
+          HELLO_CLIENT_ID: props.clientID,
+        }
+        if (loginTriggerFunctionArn)
+          environment['LOGIN_TRIGGER_FUNCTION_ARN'] = loginTriggerFunctionArn
+        if (props.redirectURI) 
+          environment['HELLO_REDIRECT_URI'] = props.redirectURI
+        if (props.providerHints)
+          environment['HELLO_PROVIDER_HINTS'] = props.providerHints.join(' ')
+        if (props.scopes)
+          environment['HELLO_SCOPES'] = props.scopes.join(' ')
+        if (props.sameSiteStrict)
+          environment['HELLO_SAME_SITE_STRICT'] = 'true'
+        if (props.cookieToken)
+          environment['HELLO_COOKIE_TOKEN'] = 'true'          
 
-        this.lambdaFunction = new lambda.Function(this, 'HelloClient', {
-          functionName: 'HelloClient',
+        const functionName = props.functionName || 'HelloClient'
+        this.lambdaFunction = new lambda.Function(this, functionName, {
+          functionName,
           runtime: lambda.Runtime.NODEJS_20_X, 
           handler: 'index.handler',
           code: lambda.Code.fromAsset(zipFilePath), 
-          environment: {
-            HELLO_COOKIE_SECRET: props.cookieSecret || crypto.randomBytes(32).toString('hex'),
-            HELLO_CLIENT_ID: props.clientID,
-            LOGIN_TRIGGER_FUNCTION_ARN: loginTriggerFunctionArn || '',
-          },
+          environment,
         });
 
 
