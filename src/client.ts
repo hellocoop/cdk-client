@@ -8,6 +8,7 @@ import * as crypto from 'crypto';
 import * as path from 'path';
 import { Scope, ProviderHint} from '@hellocoop/types'
 
+export { Scope, ProviderHint }
 
 export interface HelloClientConstructProps {
   clientID: string;

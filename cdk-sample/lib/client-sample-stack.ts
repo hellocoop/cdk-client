@@ -16,13 +16,28 @@ import * as route53Targets from 'aws-cdk-lib/aws-route53-targets';
 // see https://github.com/aws/aws-cdk/issues/25343
 import { DnsValidatedCertificate } from 'aws-cdk-lib/aws-certificatemanager';
 
-import { HelloClientConstruct } from '@hellocoop/cdk-client'
+import { HelloClientConstruct, Scope, ProviderHint  } from '@hellocoop/cdk-client'
 
-
+/*
+  Update the following constants to match your environment
+*/
+// The domain name you will be using
 const DOMAIN = 'hello-beta.net'
 const HOSTNAME = 'client-test.' + DOMAIN
+// Your Hellō cleint_id from https://console.hello.coop
 const CLIENT_ID = '2000a054-aa09-45a3-9f62-26e03ee9dc76'
-const HELLO_API_ROUTE = '/api/hellocoop'
+
+/*
+  Optional: Update the following constants to match your circumstances
+*/
+// The route that the Hello Client Lambda will be available at
+const HELLO_API_ROUTE = '/api/hellocoop' // default value
+
+// optionally override the default value - see https://www.hello.dev/docs/apis/wallet/#provider_hint
+const PROVIDER_HINTS: ProviderHint[] = ['google'] 
+
+// optionally override the default value - see https://www.hello.dev/docs/scopes/
+const SCOPES: Scope[] = ['openid', 'email', 'name', 'picture'] // default value
 
 export class ClientSampleStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -30,11 +45,11 @@ export class ClientSampleStack extends cdk.Stack {
 
     // Create the Hello Client Lambda and functionUrl
     const helloClient = new HelloClientConstruct(this, 'HelloClient', {
-      clientID: CLIENT_ID,
-      route: HELLO_API_ROUTE,
-      hostname: HOSTNAME,
-      providerHints: ['google'],
-      scopes: ['email', 'name'],
+      clientID: CLIENT_ID,            // required
+      hostname: HOSTNAME,             // recommended
+      route: HELLO_API_ROUTE,         // optional
+      providerHints: PROVIDER_HINTS,  // optional
+      scopes: SCOPES,                 // optional
     });
 
     // create a certificate
@@ -73,6 +88,7 @@ export class ClientSampleStack extends cdk.Stack {
       additionalBehaviors: {
         HELLO_API_ROUTE: {
           origin: new origins.FunctionUrlOrigin(helloClient.functionUrl),
+          // following are required for the Hello Client Lambda to work
           viewerProtocolPolicy: cf.ViewerProtocolPolicy.HTTPS_ONLY,
           allowedMethods: cf.AllowedMethods.ALLOW_ALL,
           cachePolicy: cf.CachePolicy.CACHING_DISABLED,

@@ -47,4 +47,4 @@ See TBD for details
 
 ## Sample
 
-See [client-sample-stack.ts](cdk-sample/lib/client-sample-stack.ts) in (cdk-sample)[cdk-sample]
+See [client-sample-stack.ts](cdk-sample/lib/client-sample-stack.ts) in [cdk-sample](cdk-sample)
