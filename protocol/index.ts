@@ -78,6 +78,7 @@ const handler = async (event: APIGatewayProxyEventV2, context: Context): Promise
   const { headers, cookies, queryStringParameters, body, isBase64Encoded, requestContext } = event;
   const method = requestContext?.http?.method;
   const path = requestContext?.http?.path;
+
   const content = JSON.stringify({
     HELLO_COOKIE_SECRET,
     CLIENT_ID,
@@ -97,6 +98,9 @@ const handler = async (event: APIGatewayProxyEventV2, context: Context): Promise
   const helloReq = convertToHelloRequest(event);
   const helloRes = convertToHelloResponse(result);
   await router(helloReq, helloRes)
+
+  console.log('result', JSON.stringify(result, null, 2));
+  
   return result
 }
 
