@@ -86,7 +86,7 @@ export class ClientSampleStack extends cdk.Stack {
         allowedMethods: cf.AllowedMethods.ALLOW_GET_HEAD,
       },
       additionalBehaviors: {
-        HELLO_API_ROUTE: {
+        [HELLO_API_ROUTE]: {
           origin: new origins.FunctionUrlOrigin(helloClient.functionUrl),
           // following are required for the Hello Client Lambda to work
           viewerProtocolPolicy: cf.ViewerProtocolPolicy.HTTPS_ONLY,
