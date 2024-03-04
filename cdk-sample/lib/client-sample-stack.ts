@@ -34,7 +34,7 @@ const CLIENT_ID = '2000a054-aa09-45a3-9f62-26e03ee9dc76'
 const HELLO_API_ROUTE = '/api/hellocoop' // default value
 
 // optionally override the default value - see https://www.hello.dev/docs/apis/wallet/#provider_hint
-const PROVIDER_HINTS: ProviderHint[] = ['google'] 
+const PROVIDER_HINTS: ProviderHint[] = ['github'] 
 
 // optionally override the default value - see https://www.hello.dev/docs/scopes/
 const SCOPES: Scope[] = ['openid', 'email', 'name', 'picture'] // default value
@@ -51,6 +51,7 @@ export class ClientSampleStack extends cdk.Stack {
       providerHints: PROVIDER_HINTS,  // optional
       scopes: SCOPES,                 // optional
     });
+
 
     // create a certificate
     const zone = HostedZone.fromLookup(this, "zone", { domainName: DOMAIN })
