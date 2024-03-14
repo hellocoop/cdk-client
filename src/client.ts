@@ -6,7 +6,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as crypto from 'crypto';
 import * as path from 'path';
-import { Scope, ProviderHint} from '@hellocoop/types'
+import { Scope, ProviderHint } from '@hellocoop/types'
 
 export { Scope, ProviderHint }
 
