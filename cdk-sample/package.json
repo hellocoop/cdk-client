@@ -5,8 +5,9 @@
     "build": "tsc",
     "watch": "tsc -w",
     "cdk": "cdk",
-    "test": "npm install @hellocoop/cdk-client@canary && npm run build && cdk deploy",
-    "tail": "aws logs tail /aws/lambda/HelloClient --follow"
+    "test": "npm install @hellocoop/cdk-client@canary && npm run build && cdk deploy --all",
+    "tail": "aws logs tail /aws/lambda/HelloClient --follow",
+    "tail-test": "aws logs tail /aws/lambda/helloLoginTrigger --follow"
   },
   "devDependencies": {
     "@aws-sdk/types": "^3.523.0",

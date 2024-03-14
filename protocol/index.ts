@@ -1,4 +1,6 @@
 import { APIGatewayProxyEventV2, APIGatewayProxyStructuredResultV2, Context } from 'aws-lambda';
+import { LambdaClient, InvokeCommand } from "@aws-sdk/client-lambda"
+
 
 import {
   router,
@@ -10,16 +12,64 @@ import {
   configure,
   Config,
   configuration,
+  LoggedInParams, 
+  LoggedInResponse
 } from '@hellocoop/router';
 
 import { serialize } from 'cookie'
 
 // Load environment variables
 const { CLIENT_ID, HELLO_COOKIE_SECRET } = process.env;
-// Load configuration
-// const config: Config = require('./hello.config.js')
+
+
+
+const LOGIN_TRIGGER_FUNCTION_ARN = process.env.LOGIN_TRIGGER_FUNCTION_ARN
+
+const client = new LambdaClient();
+
+const trigger = async (props: LoggedInParams):Promise<LoggedInResponse> => {
+  
+  if (!LOGIN_TRIGGER_FUNCTION_ARN) {  
+    console.error('No login trigger function defined')
+    return {}
+  }
+
+  const command = new InvokeCommand({
+    FunctionName: LOGIN_TRIGGER_FUNCTION_ARN,
+    Payload: JSON.stringify(props.payload),
+    InvocationType: 'RequestResponse',
+
+  });
+  
+  try {
+    const result = await client.send(command);
+    console.log('Function invoked:', result);
+    return undefined as any
+    // return result.Payload && JSON.parse(result.Payload.toString());
+  } catch (error) {
+    console.error('Error invoking function:', error);
+    throw error;
+  }
+}
+
+const config: Config = 
+  LOGIN_TRIGGER_FUNCTION_ARN 
+    ?  { 
+        callbacks: {
+          loggedIn: trigger
+        }
+      }
+    : {}
+
+if (LOGIN_TRIGGER_FUNCTION_ARN) {
+
+  console.log('Trigger function defined:', LOGIN_TRIGGER_FUNCTION_ARN);
+}
+
 if (!isConfigured)
-  configure({})
+  configure(config)
+
+
 
 const convertToHelloRequest = (event: APIGatewayProxyEventV2 ): HelloRequest => {
   const { headers, cookies, queryStringParameters, requestContext } = event
