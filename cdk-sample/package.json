@@ -9,6 +9,7 @@
     "tail": "aws logs tail /aws/lambda/HelloClient --follow"
   },
   "devDependencies": {
+    "@aws-sdk/types": "^3.523.0",
     "@types/node": "20.11.19",
     "aws-cdk": "2.130.0",
     "ts-node": "^10.9.2",

@@ -31,13 +31,17 @@ const CLIENT_ID = '2000a054-aa09-45a3-9f62-26e03ee9dc76'
   Optional: Update the following constants to match your circumstances
 */
 // The route that the Hello Client Lambda will be available at
-const HELLO_API_ROUTE = '/api/hellocoop' // default value
+const HELLO_API_ROUTE = '/api/hellocoop' // this is the default value
 
 // optionally override the default value - see https://www.hello.dev/docs/apis/wallet/#provider_hint
-const PROVIDER_HINTS: ProviderHint[] = ['github'] 
+const PROVIDER_HINTS: ProviderHint[] = ['github','apple--'] // add github, and demote apple
 
 // optionally override the default value - see https://www.hello.dev/docs/scopes/
-const SCOPES: Scope[] = ['openid', 'email', 'name', 'picture'] // default value
+const SCOPES: Scope[] = ['openid', 'email', 'name', 'picture'] // this is the default value
+
+// if a trigger is provided, it is called on successful login
+const LOGIN_TRIGGER_FUNCTION_NAME = 'helloLoginTrigger' // this lambda defined elsewhere in another stack
+
 
 export class ClientSampleStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -50,6 +54,7 @@ export class ClientSampleStack extends cdk.Stack {
       route: HELLO_API_ROUTE,         // optional
       providerHints: PROVIDER_HINTS,  // optional
       scopes: SCOPES,                 // optional
+      loginTriggerFunctionName: LOGIN_TRIGGER_FUNCTION_NAME, // optional - will use current env for account and region 
     });
 
 
