@@ -61,15 +61,10 @@ const config: Config =
       }
     : {}
 
-if (LOGIN_TRIGGER_FUNCTION_ARN) {
-
-  console.log('Trigger function defined:', LOGIN_TRIGGER_FUNCTION_ARN);
-}
+console.log('config', JSON.stringify(config, null, 2));
 
 if (!isConfigured)
   configure(config)
-
-
 
 const convertToHelloRequest = (event: APIGatewayProxyEventV2 ): HelloRequest => {
   const { headers, cookies, queryStringParameters, requestContext } = event
@@ -130,6 +125,8 @@ const handler = async (event: APIGatewayProxyEventV2, context: Context): Promise
   const method = requestContext?.http?.method;
   const path = requestContext?.http?.path;
 
+  console.log('config', JSON.stringify(config, null, 2));
+
   const content = JSON.stringify({
     HELLO_COOKIE_SECRET,
     CLIENT_ID,
@@ -141,6 +138,8 @@ const handler = async (event: APIGatewayProxyEventV2, context: Context): Promise
     body,
     isBase64Encoded,
   }, null, 2);
+
+
   console.log('event', content);
 
   const result: APIGatewayProxyStructuredResultV2 = {
