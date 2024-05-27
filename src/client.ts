@@ -27,21 +27,21 @@ export interface HelloClientConstructProps {
 const zipFilePath = path.join(__dirname, 'protocol.zip');
 
 export class HelloClientConstruct extends Construct {
-    // Public properties to expose the Lambda function and URL
-    public readonly lambdaFunction: lambda.Function;
-    public readonly functionUrl: lambda.FunctionUrl;
+    public readonly lambdaFunction: lambda.Function; // use this in API Gateway
+    public readonly functionUrl: lambda.FunctionUrl; // use this in CloudFront
+    public readonly authorizerLambda: lambda.Function; // use this in API Gateway as an authorizer
 
     constructor(scope: Construct, id: string, props: HelloClientConstructProps) {
         super(scope, id);
 
-        // if a loginFunctionTrigger is provided, attach a policy to the lambda function
         const { region, account } = cdk.Stack.of(this);
         const loginTriggerFunctionArn = props.loginTriggerFunctionArn 
           || ( props.loginTriggerFunctionName
                 ? `arn:aws:lambda:${region}:${account}:function:${props.loginTriggerFunctionName}`
                 : null )
+        const HELLO_COOKIE_SECRET = props.cookieSecret || crypto.randomBytes(32).toString('hex')
         const environment:{[key: string]: string;} = {
-          HELLO_COOKIE_SECRET: props.cookieSecret || crypto.randomBytes(32).toString('hex'),
+          HELLO_COOKIE_SECRET,
           HELLO_CLIENT_ID: props.clientID,
         }
         if (loginTriggerFunctionArn)
@@ -62,13 +62,13 @@ export class HelloClientConstruct extends Construct {
         const functionName = props.functionName || 'HelloClient'
         this.lambdaFunction = new lambda.Function(this, functionName, {
           functionName,
-          runtime: lambda.Runtime.NODEJS_20_X, 
-          handler: 'index.handler',
-          code: lambda.Code.fromAsset(zipFilePath), 
+          runtime: lambda.Runtime.NODEJS_18_X, 
+          handler: 'authorizer.handler',
+          code: lambda.Code.fromAsset(zipFilePath),
           environment,
         });
 
-
+        // if a loginFunctionTrigger is provided, attach a policy to the lambda function
         // Create a policy statement that grants invoke permission on the target Lambda
         if (loginTriggerFunctionArn) {
           const policyStatement = new iam.PolicyStatement({
@@ -84,6 +84,17 @@ export class HelloClientConstruct extends Construct {
         this.functionUrl = this.lambdaFunction.addFunctionUrl({
           authType: lambda.FunctionUrlAuthType.NONE, // Publicly accessible
         })
+
+        // Create the authorizer lambda
+        this.authorizerLambda = new lambda.Function(this, 'Authorizer', {
+          runtime: lambda.Runtime.NODEJS_18_X,
+          code: lambda.Code.fromAsset('authorizer.js'),
+          handler: 'index.handler',
+          environment: {
+            HELLO_COOKIE_SECRET,
+            HELLO_CLIENT_ID: props.clientID,
+          },
+        });
 
     }
 }

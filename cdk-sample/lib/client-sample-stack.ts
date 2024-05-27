@@ -11,6 +11,8 @@ import * as cf from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from "aws-cdk-lib/aws-cloudfront-origins";
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as route53Targets from 'aws-cdk-lib/aws-route53-targets';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 // DnsValidatedCertificate has been marked deprecated, but no simple alternative is available
 // so still using it for now
 // see https://github.com/aws/aws-cdk/issues/25343
@@ -90,20 +92,18 @@ export class ClientSampleStack extends cdk.Stack {
         origin: new origins.S3Origin(bucket),
         viewerProtocolPolicy: cf.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         allowedMethods: cf.AllowedMethods.ALLOW_GET_HEAD,
-      },
-      additionalBehaviors: {
-        [HELLO_API_ROUTE]: {
-          origin: new origins.FunctionUrlOrigin(helloClient.functionUrl),
-          // following are required for the Hello Client Lambda to work
-          viewerProtocolPolicy: cf.ViewerProtocolPolicy.HTTPS_ONLY,
-          allowedMethods: cf.AllowedMethods.ALLOW_ALL,
-          cachePolicy: cf.CachePolicy.CACHING_DISABLED,
-          originRequestPolicy: new cf.OriginRequestPolicy(this, 'hellocoop', {
-            queryStringBehavior: cf.OriginRequestQueryStringBehavior.all(),
-            cookieBehavior: cf.OriginRequestCookieBehavior.all(),
-          }),
-        },
       }
+    });
+
+    // add behavior for the Hello Client Lambda
+    distribution.addBehavior(HELLO_API_ROUTE, new origins.FunctionUrlOrigin(helloClient.functionUrl), {
+      viewerProtocolPolicy: cf.ViewerProtocolPolicy.HTTPS_ONLY,
+      allowedMethods: cf.AllowedMethods.ALLOW_ALL,
+      cachePolicy: cf.CachePolicy.CACHING_DISABLED,
+      originRequestPolicy: new cf.OriginRequestPolicy(this, 'hellocoop', {
+        queryStringBehavior: cf.OriginRequestQueryStringBehavior.all(),
+        cookieBehavior: cf.OriginRequestCookieBehavior.all(),
+      }),
     });
 
     // Create a Route 53 A record to the CloudFront distribution
@@ -114,6 +114,56 @@ export class ClientSampleStack extends cdk.Stack {
         new route53Targets.CloudFrontTarget(distribution)
       )
     })
+
+/*
+    The following code shows how to use the authorizer in an API Gateway
+*/
+
+    // The Lambda function for the sample API
+    const sampleApiLambda = new lambda.Function(this, 'SampleApiLambda', {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      code: lambda.Code.fromAsset('lambdas/sample-api'),
+      handler: 'index.handler',
+    });
+
+    // The Lambda function for the authorizer
+    const authorizerLambda = new lambda.Function(this, 'AuthorizerLambda', {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      code: lambda.Code.fromAsset('lambdas/authorizer'),
+      handler: 'index.handler',
+    });
+
+    // Create the API Gateway
+    const api = new apigateway.RestApi(this, 'SampleApi', {
+      restApiName: 'Sample Service',
+      description: 'This service serves sample data.',
+    });
+
+    // Create a Lambda authorizer
+    const lambdaAuthorizer = new apigateway.TokenAuthorizer(this, 'LambdaAuthorizer', {
+      handler: authorizerLambda,
+    });
+
+    // Create a resource and method for the sample API
+    const sampleResource = api.root.addResource('sample');
+    const sampleIntegration = new apigateway.LambdaIntegration(sampleApiLambda);
+    sampleResource.addMethod('GET', sampleIntegration, {
+      authorizer: lambdaAuthorizer,
+    });
+
+    // Add the API Gateway as an additional behavior to CloudFront
+    distribution.addBehavior('/sample', new origins.HttpOrigin(`${api.restApiId}.execute-api.${this.region}.amazonaws.com`, {
+      originPath: '/prod',
+    }), {
+      viewerProtocolPolicy: cf.ViewerProtocolPolicy.HTTPS_ONLY,
+      allowedMethods: cf.AllowedMethods.ALLOW_ALL,
+      cachePolicy: cf.CachePolicy.CACHING_DISABLED,
+      originRequestPolicy: new cf.OriginRequestPolicy(this, 'ApiOriginRequestPolicy', {
+        queryStringBehavior: cf.OriginRequestQueryStringBehavior.all(),
+        cookieBehavior: cf.OriginRequestCookieBehavior.all(),
+      }),
+    });
+
 
     // Output what we have created
     new cdk.CfnOutput(this, 'DistributionId', { value: distribution.distributionId });
