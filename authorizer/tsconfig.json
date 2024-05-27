@@ -6,8 +6,8 @@
       "esModuleInterop": true,
       "skipLibCheck": true,
       "forceConsistentCasingInFileNames": true,
-      "outDir": "../dist",
+      "outDir": "../dist/authorizer",
     },
-    "include": ["./authorizer.ts"], // Specifically include only the authorizer.ts file
+    "include": ["./index.ts"], // Specifically include only the index.ts file
 }
   
