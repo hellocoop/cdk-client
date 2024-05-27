@@ -8,6 +8,9 @@ const env = { account, region }
 
 const app = new cdk.App();
 
-new LoginSyncStack(app, 'HelloLoginSyncStack', { env });
-new ClientSampleStack(app, 'HelloClientSampleStack', { env });
+const loginSyncStack = new LoginSyncStack(app, 'HelloLoginSyncStack', { env });
+const clientSampleStack = new ClientSampleStack(app, 'HelloClientSampleStack', { env });
+
+clientSampleStack.addDependency(loginSyncStack);
+
 
