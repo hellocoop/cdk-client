@@ -18,6 +18,9 @@ export class LoginSyncStack extends cdk.Stack {
         code: lambda.Code.fromAsset('lambdas/sample-login-sync'),      
     });
 
-    new cdk.CfnOutput(this, 'LoginSyncLambdaArn', { value: this.lambdaFunction.functionArn });
+    new cdk.CfnOutput(this, 'LoginSyncLambdaArn', { 
+      value: this.lambdaFunction.functionArn,  
+      exportName: 'LoginSyncLambdaArn'
+    });
   }
 }
