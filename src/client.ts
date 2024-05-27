@@ -6,6 +6,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as crypto from 'crypto';
 import * as path from 'path';
+
 import { Scope, ProviderHint } from '@hellocoop/types'
 
 export { Scope, ProviderHint }
@@ -88,7 +89,7 @@ export class HelloClientConstruct extends Construct {
         // Create the authorizer lambda
         this.authorizerLambda = new lambda.Function(this, 'Authorizer', {
           runtime: lambda.Runtime.NODEJS_18_X,
-          code: lambda.Code.fromAsset('authorizer.js'),
+          code: lambda.Code.fromAsset(path.join(__dirname,'authorizer.js')),
           handler: 'index.handler',
           environment: {
             HELLO_COOKIE_SECRET,
