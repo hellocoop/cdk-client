@@ -17,7 +17,7 @@
     "typescript": "~5.3.3"
   },
   "dependencies": {
-    "@hellocoop/cdk-client": "^2.0.0-canary.5",
+    "@hellocoop/cdk-client": "^2.0.0-canary.6",
     "aws-cdk-lib": "2.130.0",
     "constructs": "^10.0.0",
     "source-map-support": "^0.5.21"
