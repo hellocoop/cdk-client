@@ -13,8 +13,8 @@ export { Scope, ProviderHint }
 export interface HelloClientConstructProps {
   clientID: string;
   cookieSecret?: string;
-  loginTriggerFunctionName?: string;
-  loginTriggerFunctionArn?: string;
+  loginSyncFunctionName?: string;
+  loginSyncFunctionArn?: string;
   functionName?: string;
   hostname?: string;
   route?: string;
@@ -35,17 +35,17 @@ export class HelloClientConstruct extends Construct {
         super(scope, id);
 
         const { region, account } = cdk.Stack.of(this);
-        const loginTriggerFunctionArn = props.loginTriggerFunctionArn 
-          || ( props.loginTriggerFunctionName
-                ? `arn:aws:lambda:${region}:${account}:function:${props.loginTriggerFunctionName}`
+        const loginSyncFunctionArn = props.loginSyncFunctionArn 
+          || ( props.loginSyncFunctionName
+                ? `arn:aws:lambda:${region}:${account}:function:${props.loginSyncFunctionName}`
                 : null )
         const HELLO_COOKIE_SECRET = props.cookieSecret || crypto.randomBytes(32).toString('hex')
         const environment:{[key: string]: string;} = {
           HELLO_COOKIE_SECRET,
           HELLO_CLIENT_ID: props.clientID,
         }
-        if (loginTriggerFunctionArn)
-          environment['LOGIN_TRIGGER_FUNCTION_ARN'] = loginTriggerFunctionArn
+        if (loginSyncFunctionArn)
+          environment['LOGIN_SYNC_FUNCTION_ARN'] = loginSyncFunctionArn
         if (props.hostname) 
           environment['HELLO_HOST'] = props.hostname
         if (props.route) 
@@ -70,10 +70,10 @@ export class HelloClientConstruct extends Construct {
 
         // if a loginFunctionTrigger is provided, attach a policy to the lambda function
         // Create a policy statement that grants invoke permission on the target Lambda
-        if (loginTriggerFunctionArn) {
+        if (loginSyncFunctionArn) {
           const policyStatement = new iam.PolicyStatement({
             actions: ['lambda:InvokeFunction'],
-            resources: [loginTriggerFunctionArn],
+            resources: [loginSyncFunctionArn],
           });
           // Attach the policy statement to the invoking Lambda's execution role
           this.lambdaFunction.role?.attachInlinePolicy(new iam.Policy(this, 'InvokePolicy', {

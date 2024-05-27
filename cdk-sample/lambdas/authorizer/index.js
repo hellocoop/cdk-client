@@ -1,6 +1,7 @@
 // simple authorizer function
 
 exports.handler = async (event) => {
+    console.log('Received event:', JSON.stringify(event, null, 2));
     const token = event.headers.Authorization || event.authorizationToken;
     // Validate the token here
     if (token === 'allow') {

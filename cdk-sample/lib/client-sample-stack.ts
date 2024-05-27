@@ -42,7 +42,7 @@ const PROVIDER_HINTS: ProviderHint[] = ['github','apple--'] // add github, and d
 const SCOPES: Scope[] = ['openid', 'email', 'name', 'picture'] // this is the default value
 
 // if a trigger is provided, it is called on successful login
-const LOGIN_TRIGGER_FUNCTION_NAME = 'helloLoginTrigger' // this lambda defined elsewhere in another stack
+const LOGIN_SYNC_LAMBDA = 'loginSyncSample' // defined in login-sync-stack.ts
 
 
 export class ClientSampleStack extends cdk.Stack {
@@ -56,7 +56,7 @@ export class ClientSampleStack extends cdk.Stack {
       route: HELLO_API_ROUTE,         // optional
       providerHints: PROVIDER_HINTS,  // optional
       scopes: SCOPES,                 // optional
-      loginTriggerFunctionName: LOGIN_TRIGGER_FUNCTION_NAME, // optional - will use current env for account and region 
+      loginSyncFunctionName: LOGIN_SYNC_LAMBDA, // optional - will use current env for account and region 
     });
 
 
@@ -114,6 +114,9 @@ export class ClientSampleStack extends cdk.Stack {
         new route53Targets.CloudFrontTarget(distribution)
       )
     })
+
+
+
 
 /*
     The following code shows how to use the authorizer in an API Gateway
