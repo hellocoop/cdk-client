@@ -13,6 +13,7 @@ import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as route53Targets from 'aws-cdk-lib/aws-route53-targets';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+
 // DnsValidatedCertificate has been marked deprecated, but no simple alternative is available
 // so still using it for now
 // see https://github.com/aws/aws-cdk/issues/25343
@@ -41,9 +42,6 @@ const PROVIDER_HINTS: ProviderHint[] = ['github','apple--'] // add github, and d
 // optionally override the default value - see https://www.hello.dev/docs/scopes/
 const SCOPES: Scope[] = ['openid', 'email', 'name', 'picture'] // this is the default value
 
-// if a trigger is provided, it is called on successful login
-const LOGIN_SYNC_LAMBDA = 'loginSyncSample' // defined in login-sync-stack.ts
-
 
 export class ClientSampleStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -66,6 +64,7 @@ export class ClientSampleStack extends cdk.Stack {
 
     // create a certificate
     const zone = HostedZone.fromLookup(this, "zone", { domainName: DOMAIN })
+
     const certificate = new DnsValidatedCertificate(this, 'cert', {
       domainName: HOSTNAME,
       region: 'us-east-1', // for CloudFront
@@ -125,6 +124,14 @@ export class ClientSampleStack extends cdk.Stack {
 /*
     The following code shows how to use the authorizer in an API Gateway
 */
+    // Create a CloudFront cache policy for the API that forwards the Authorization header
+    const apiCachePolicy = new cf.CachePolicy(this, 'ApiCachePolicy', {
+      cachePolicyName: 'ApiCachePolicy',
+      headerBehavior: cf.CacheHeaderBehavior.allowList('Authorization'),
+      queryStringBehavior: cf.CacheQueryStringBehavior.all(),
+      cookieBehavior: cf.CacheCookieBehavior.all(),
+      maxTtl: cdk.Duration.seconds(0),
+    })
 
     // The Lambda function for the sample API
     const sampleApiLambda = new lambda.Function(this, 'SampleApiLambda', {
@@ -165,14 +172,13 @@ export class ClientSampleStack extends cdk.Stack {
       originPath: '/prod',
     }), {
       viewerProtocolPolicy: cf.ViewerProtocolPolicy.HTTPS_ONLY,
-      allowedMethods: cf.AllowedMethods.ALLOW_ALL,
-      cachePolicy: cf.CachePolicy.CACHING_DISABLED,
-      originRequestPolicy: new cf.OriginRequestPolicy(this, 'ApiOriginRequestPolicy', {
+      allowedMethods: cf.AllowedMethods.ALLOW_GET_HEAD,
+      cachePolicy: apiCachePolicy,
+      originRequestPolicy: new cf.OriginRequestPolicy(this, 'ApiOriginRequestPolicySample', {
         queryStringBehavior: cf.OriginRequestQueryStringBehavior.all(),
         cookieBehavior: cf.OriginRequestCookieBehavior.all(),
-      }),
+      }),    
     });
-
 
     // Output what we have created
     new cdk.CfnOutput(this, 'DistributionId', { value: distribution.distributionId });
@@ -180,5 +186,8 @@ export class ClientSampleStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'WebsiteURL', { value: 'https://' + HOSTNAME });
     new cdk.CfnOutput(this, 'HelloClientLambdaUrl', { value: helloClient.functionUrl.url });
     new cdk.CfnOutput(this, 'HelloClientLambdaArn', { value: helloClient.lambdaFunction.functionArn });
+    new cdk.CfnOutput(this, 'ApiUrl', { value: api.url });
+    new cdk.CfnOutput(this, 'AuthorizerLambdaArn', { value: authorizerLambda.functionArn });
+    new cdk.CfnOutput(this, 'SampleApiLambdaArn', { value: sampleApiLambda.functionArn });
   }
 }
