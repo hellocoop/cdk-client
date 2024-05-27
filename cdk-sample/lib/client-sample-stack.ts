@@ -49,6 +49,10 @@ export class ClientSampleStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    // Import the LoginSync Lambda ARN created in the LoginSyncStack
+    const loginSyncFunctionArn = cdk.Fn.importValue('LoginSyncLambdaArn');
+
+
     // Create the Hello Client Lambda and functionUrl
     const helloClient = new HelloClientConstruct(this, 'HelloClient', {
       clientID: CLIENT_ID,            // required
@@ -56,7 +60,7 @@ export class ClientSampleStack extends cdk.Stack {
       route: HELLO_API_ROUTE,         // optional
       providerHints: PROVIDER_HINTS,  // optional
       scopes: SCOPES,                 // optional
-      loginSyncFunctionName: LOGIN_SYNC_LAMBDA, // optional - will use current env for account and region 
+      loginSyncFunctionArn          // optional
     });
 
 
@@ -124,6 +128,7 @@ export class ClientSampleStack extends cdk.Stack {
 
     // The Lambda function for the sample API
     const sampleApiLambda = new lambda.Function(this, 'SampleApiLambda', {
+      functionName: 'SampleApiLambda',
       runtime: lambda.Runtime.NODEJS_18_X,
       code: lambda.Code.fromAsset('lambdas/sample-api'),
       handler: 'index.handler',
@@ -131,6 +136,7 @@ export class ClientSampleStack extends cdk.Stack {
 
     // The Lambda function for the authorizer
     const authorizerLambda = new lambda.Function(this, 'AuthorizerLambda', {
+      functionName: 'AuthorizerLambda',
       runtime: lambda.Runtime.NODEJS_18_X,
       code: lambda.Code.fromAsset('lambdas/authorizer'),
       handler: 'index.handler',
