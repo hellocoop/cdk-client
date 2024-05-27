@@ -64,7 +64,7 @@ export class HelloClientConstruct extends Construct {
         this.lambdaFunction = new lambda.Function(this, functionName, {
           functionName,
           runtime: lambda.Runtime.NODEJS_18_X, 
-          handler: 'authorizer.handler',
+          handler: 'index.handler',
           code: lambda.Code.fromAsset(zipFilePath),
           environment,
         });
