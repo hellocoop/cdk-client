@@ -12,8 +12,8 @@ import {
   configure,
   Config,
   configuration,
-  LoginTriggerParams, 
-  LoginTriggerResponse
+  LoginSyncParams, 
+  LoginSyncResponse
 } from '@hellocoop/router';
 
 import { serialize } from 'cookie'
@@ -27,7 +27,7 @@ const LOGIN_TRIGGER_FUNCTION_ARN = process.env.LOGIN_TRIGGER_FUNCTION_ARN
 
 const client = new LambdaClient();
 
-const loginTrigger = async (props: LoginTriggerParams):Promise<LoginTriggerResponse> => {
+const loginSync = async (props: LoginSyncParams):Promise<LoginSyncResponse> => {
   
   if (!LOGIN_TRIGGER_FUNCTION_ARN) {  
     console.error('No login trigger function defined')
@@ -54,7 +54,7 @@ const loginTrigger = async (props: LoginTriggerParams):Promise<LoginTriggerRespo
 
 const config: Config = 
   LOGIN_TRIGGER_FUNCTION_ARN 
-    ?  { loginTrigger }
+    ?  { loginSync }
     : {}
 
 console.log('config', JSON.stringify(config, null, 2));
