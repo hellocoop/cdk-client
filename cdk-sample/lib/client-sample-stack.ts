@@ -182,8 +182,8 @@ export class ClientSampleStack extends cdk.Stack {
     });
 
     // Output what we have created
-    new cdk.CfnOutput(this, 'DistributionId', { value: distribution.distributionId });
-    new cdk.CfnOutput(this, 'BucketName', { value: bucket.bucketName });
+    new cdk.CfnOutput(this, 'DistributionId', { exportName: 'HelloSampleClientDistributionId', value: distribution.distributionId });
+    new cdk.CfnOutput(this, 'BucketName', { exportName: 'HelloSampleClientBucket', value: bucket.bucketName });
     new cdk.CfnOutput(this, 'WebsiteURL', { value: 'https://' + HOSTNAME });
     new cdk.CfnOutput(this, 'HelloClientLambdaUrl', { value: helloClient.functionUrl.url });
     new cdk.CfnOutput(this, 'HelloClientLambdaArn', { value: helloClient.lambdaFunction.functionArn });
