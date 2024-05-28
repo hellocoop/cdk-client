@@ -158,7 +158,7 @@ export class ClientSampleStack extends cdk.Stack {
 
     // Create a Lambda authorizer
     const lambdaAuthorizer = new apigateway.TokenAuthorizer(this, 'LambdaAuthorizer', {
-      handler: authorizerLambda,
+      handler: helloClient.authorizerLambda,
     });
 
     // Create a resource and method for the sample API
@@ -188,7 +188,7 @@ export class ClientSampleStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'HelloClientLambdaUrl', { value: helloClient.functionUrl.url });
     new cdk.CfnOutput(this, 'HelloClientLambdaArn', { value: helloClient.lambdaFunction.functionArn });
     new cdk.CfnOutput(this, 'ApiUrl', { value: api.url });
-    new cdk.CfnOutput(this, 'AuthorizerLambdaArn', { value: authorizerLambda.functionArn });
+    new cdk.CfnOutput(this, 'AuthorizerLambdaArn', { value: helloClient.authorizerLambda.functionArn });
     new cdk.CfnOutput(this, 'SampleApiLambdaArn', { value: sampleApiLambda.functionArn });
   }
 }
