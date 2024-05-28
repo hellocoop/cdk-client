@@ -58,7 +58,8 @@ export class ClientSampleStack extends cdk.Stack {
       route: HELLO_API_ROUTE,         // optional
       providerHints: PROVIDER_HINTS,  // optional
       scopes: SCOPES,                 // optional
-      loginSyncFunctionArn          // optional
+      loginSyncFunctionArn,           // optional
+      cookieToken: true,              // optional - default is false, returns the token in a cookie with op=auth
     });
 
 
