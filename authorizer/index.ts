@@ -86,6 +86,8 @@ const handler = async (event: APIGatewayTokenAuthorizerEvent, context: Context):
         return denyResponse
     }
 
+console.log('token', token)
+
     try {
         const payload = verifyToken(token)
         const response = generateAcceptResponse(payload)
