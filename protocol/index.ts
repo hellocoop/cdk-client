@@ -23,7 +23,7 @@ const { CLIENT_ID, HELLO_COOKIE_SECRET } = process.env;
 
 
 
-const LOGIN_TRIGGER_FUNCTION_ARN = process.env.LOGIN_TRIGGER_FUNCTION_ARN
+const LOGIN_SYNC_FUNCTION_ARN = process.env.LOGIN_SYNC_FUNCTION_ARN
 
 const client = new LambdaClient();
 
@@ -31,13 +31,13 @@ const loginSync = async (props: LoginSyncParams):Promise<LoginSyncResponse> => {
 
   console.log('loginSync', JSON.stringify(props, null, 2));
   
-  if (!LOGIN_TRIGGER_FUNCTION_ARN) {  
+  if (!LOGIN_SYNC_FUNCTION_ARN) {  
     console.error('No login trigger function defined')
     return {}
   }
 
   const command = new InvokeCommand({
-    FunctionName: LOGIN_TRIGGER_FUNCTION_ARN,
+    FunctionName: LOGIN_SYNC_FUNCTION_ARN,
     Payload: JSON.stringify(props.payload),
     InvocationType: 'RequestResponse',
 
@@ -54,7 +54,7 @@ const loginSync = async (props: LoginSyncParams):Promise<LoginSyncResponse> => {
 }
 
 const config: Config = 
-  LOGIN_TRIGGER_FUNCTION_ARN 
+  LOGIN_SYNC_FUNCTION_ARN 
     ?  { loginSync }
     : {}
 
