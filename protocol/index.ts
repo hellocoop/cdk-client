@@ -12,8 +12,8 @@ import {
   configure,
   Config,
   configuration,
-  LoginTriggerParams, 
-  LoginTriggerResponse
+  LoginSyncParams, 
+  LoginSyncResponse
 } from '@hellocoop/router';
 
 import { serialize } from 'cookie'
@@ -27,7 +27,7 @@ const LOGIN_TRIGGER_FUNCTION_ARN = process.env.LOGIN_TRIGGER_FUNCTION_ARN
 
 const client = new LambdaClient();
 
-const loginTrigger = async (props: LoginTriggerParams):Promise<LoginTriggerResponse> => {
+const loginSync = async (props: LoginSyncParams):Promise<LoginSyncResponse> => {
   
   if (!LOGIN_TRIGGER_FUNCTION_ARN) {  
     console.error('No login trigger function defined')
@@ -43,7 +43,6 @@ const loginTrigger = async (props: LoginTriggerParams):Promise<LoginTriggerRespo
   
   try {
     const result = await client.send(command);
-    console.log('Function invoked:', result);
     return undefined as any
     // return result.Payload && JSON.parse(result.Payload.toString());
   } catch (error) {
@@ -54,7 +53,7 @@ const loginTrigger = async (props: LoginTriggerParams):Promise<LoginTriggerRespo
 
 const config: Config = 
   LOGIN_TRIGGER_FUNCTION_ARN 
-    ?  { loginTrigger }
+    ?  { loginSync }
     : {}
 
 console.log('config', JSON.stringify(config, null, 2));
@@ -121,8 +120,6 @@ const handler = async (event: APIGatewayProxyEventV2, context: Context): Promise
   const method = requestContext?.http?.method;
   const path = requestContext?.http?.path;
 
-  console.log('config', JSON.stringify(config, null, 2));
-
   const content = JSON.stringify({
     HELLO_COOKIE_SECRET,
     CLIENT_ID,
@@ -135,9 +132,6 @@ const handler = async (event: APIGatewayProxyEventV2, context: Context): Promise
     isBase64Encoded,
   }, null, 2);
 
-
-  console.log('event', content);
-
   const result: APIGatewayProxyStructuredResultV2 = {
     statusCode: 200
   }
@@ -149,10 +143,6 @@ const handler = async (event: APIGatewayProxyEventV2, context: Context): Promise
   catch (error) {
     console.error('Error in router:', error);
   }
-
-  console.log('environment', JSON.stringify(process.env, null, 2));
-  console.log('configuration', JSON.stringify(configuration, null, 2));
-  console.log('result', JSON.stringify(result, null, 2));
   
   return result
 }
