@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HelloCoop Example</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 </head>
-<body>
+<body style="font-family: sans-serif;">
     <div id="content"></div>
 
     <script>
@@ -20,20 +22,39 @@
                         contentDiv.innerHTML = `<button onclick="login()">Hellō</button>`;
                     } else {
                         // User is logged in, show the properties and logout link
-                        let propertiesHtml = 'You are logged in. <br>';
-                        for (const [key, value] of Object.entries(data)) {
-                            propertiesHtml += `${key}: ${value}<br>`;
-                        }
-                        propertiesHtml += `<a href="/api/hellocoop?op=logout">logout</a>`;
-                        contentDiv.innerHTML = propertiesHtml;
+                        contentDiv.innerHTML = `
+                            You are logged in. <br>
+                            <pre style="white-space: pre-wrap; margin: 0;">
+                                <code>${JSON.stringify(data, null, 2)}</code>
+                            </pre>
+                            <button onclick="sampleAPI('${data.cookieToken}')">/sample</button><br><br>
+                        `;
+                        hljs.highlightAll();
+                        document.body.innerHTML += `<a href="/api/hellocoop?op=logout">logout</a>`;
                     }
                 })
-                .catch(error => console.error('Error:', error));
+                .catch(error => console.error('Error:', error))
         }
 
         // Function to handle login
         function login() {
             window.location.href = '/api/hellocoop?op=login';
+        }
+
+        // Function to call the sample API
+        function sampleAPI(cookieToken) {
+            fetch('/sample', {headers: {Authorization: cookieToken}})
+                .then(response => response.json())
+                .then(data => {
+                    const contentDiv = document.getElementById('content');
+                    contentDiv.innerHTML += `
+                        <pre style="white-space: pre-wrap; margin: 0;">
+                            <code>${JSON.stringify(data, null, 2)}</code>
+                        </pre>
+                    `;
+                    hljs.highlightAll();
+                })
+                .catch(error => console.error('Error:', error))
         }
 
         // Check auth status on page load
