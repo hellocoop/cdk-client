@@ -88,6 +88,7 @@ export class HelloClientConstruct extends Construct {
 
         // Create the authorizer lambda
         this.authorizerLambda = new lambda.Function(this, 'Authorizer', {
+          functionName: 'HelloClientAuthorizer',
           runtime: lambda.Runtime.NODEJS_18_X,
           code: lambda.Code.fromAsset(path.join(__dirname,'authorizer')),
           handler: 'index.handler',
