@@ -65,7 +65,7 @@ const generateAcceptResponse = (payload: any) => {
   return response 
 }
 
-const denyResponse = {
+const DENY_RESPONSE = {
     principalId: "unknown",
     policyDocument: {
         Version: "2012-10-17",
@@ -80,21 +80,17 @@ const denyResponse = {
 }
   
 const handler = async (event: APIGatewayTokenAuthorizerEvent, context: Context): Promise<APIGatewayAuthorizerResult> => {
-
     let token = event?.authorizationToken;
     if (!token) {
-        return denyResponse
+        return DENY_RESPONSE
     }
-
-console.log('token', token)
-
     try {
         const payload = verifyToken(token)
         const response = generateAcceptResponse(payload)
         return response
     } catch (error) {
         console.error('error', error)
-        return denyResponse
+        return DENY_RESPONSE
     }
   }
   
