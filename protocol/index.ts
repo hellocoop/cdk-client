@@ -28,6 +28,8 @@ const LOGIN_TRIGGER_FUNCTION_ARN = process.env.LOGIN_TRIGGER_FUNCTION_ARN
 const client = new LambdaClient();
 
 const loginSync = async (props: LoginSyncParams):Promise<LoginSyncResponse> => {
+
+  console.log('loginSync', JSON.stringify(props, null, 2));
   
   if (!LOGIN_TRIGGER_FUNCTION_ARN) {  
     console.error('No login trigger function defined')
@@ -120,17 +122,8 @@ const handler = async (event: APIGatewayProxyEventV2, context: Context): Promise
   const method = requestContext?.http?.method;
   const path = requestContext?.http?.path;
 
-  const content = JSON.stringify({
-    HELLO_COOKIE_SECRET,
-    CLIENT_ID,
-    method,
-    path,
-    headers,
-    cookies,
-    queryStringParameters,
-    body,
-    isBase64Encoded,
-  }, null, 2);
+  console.log('event', JSON.stringify(event, null, 2));
+  console.log('env', JSON.stringify(process.env, null, 2));
 
   const result: APIGatewayProxyStructuredResultV2 = {
     statusCode: 200
