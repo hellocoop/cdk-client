@@ -3,7 +3,8 @@
 
 import * as crypto from 'crypto';
 
-import { APIGatewayProxyEventV2, APIGatewayProxyStructuredResultV2, Context } from 'aws-lambda';
+import { APIGatewayTokenAuthorizerEvent, APIGatewayAuthorizerResult, Context } from 'aws-lambda';
+import { ReceiptRule } from 'aws-cdk-lib/aws-ses';
 
 const { CLIENT_ID, HELLO_COOKIE_SECRET } = process.env;
 
@@ -39,71 +40,60 @@ const verifyToken = (encryptedStr: string) => {
       }
 }
 
-const createPolicy = (payload: any) => {
+const generateAcceptResponse = (payload: any) => {
   const { sub, email, name, picture } = payload
 
-  const policy = {
+  const response = {
     principalId: sub,
-    "policyDocument": {
-      "Version": "2012-10-17",
-      "Statement": [
+    policyDocument: {
+      Version: "2012-10-17",
+      Statement: [
         {
-          "Effect": "Allow",
-          "Action": "execute-api:Invoke",
-          "Resource": "*"
+          Effect: "Allow",
+          Action: "execute-api:Invoke",
+          Resource: "*"
         }
       ]
     },
-    "context": {
+    context: {
         sub,
         email,
         name,
         picture
     }
   }
-  return policy 
+  return response 
 }
 
-const denyPolicy = {
-    "principalId": "unknown",
-    "policyDocument": {
-        "Version": "2012-10-17",
-        "Statement": [
+const denyResponse = {
+    principalId: "unknown",
+    policyDocument: {
+        Version: "2012-10-17",
+        Statement: [
         {
-            "Effect": "Deny",
-            "Action": "execute-api:Invoke",
-            "Resource": "*"
+            Effect: "Deny",
+            Action: "execute-api:Invoke",
+            Resource: "*"
         }
         ]
     }
 }
   
-const handler = async (event: APIGatewayProxyEventV2, context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
-    const { headers, body } = event
-    const content = JSON.stringify({
-      HELLO_COOKIE_SECRET,
-      CLIENT_ID,
-      headers,
-      body,
-    }, null, 2);
-    console.log('event', content);
-  
-    const result: APIGatewayProxyStructuredResultV2 = {
-      statusCode: 200
+const handler = async (event: APIGatewayTokenAuthorizerEvent, context: Context): Promise<APIGatewayAuthorizerResult> => {
+
+    let token = event?.authorizationToken;
+    if (!token) {
+        return denyResponse
     }
 
     try {
-        const { type, authorizationToken } = JSON.parse(body as string)
-        if (type != 'TOKEN')
-            throw new Error(`invalid type '${type}': MUST be TOKEN`)
-        const payload = verifyToken(authorizationToken)
-        const policy = createPolicy(payload)
-        result.body = JSON.stringify(policy)
+        const payload = verifyToken(token)
+        const response = generateAcceptResponse(payload)
+        return response
     } catch (error) {
         console.error('error', error)
-        result.body = JSON.stringify(denyPolicy)
+        return denyResponse
     }
-    return result
   }
   
   export { handler };
