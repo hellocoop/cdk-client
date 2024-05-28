@@ -122,8 +122,9 @@ const handler = async (event: APIGatewayProxyEventV2, context: Context): Promise
   const method = requestContext?.http?.method;
   const path = requestContext?.http?.path;
 
-  console.log('event', JSON.stringify(event, null, 2));
+  // console.log('event', JSON.stringify(event, null, 2));
   console.log('env', JSON.stringify(process.env, null, 2));
+  console.log('config', JSON.stringify(config, null, 2));
 
   const result: APIGatewayProxyStructuredResultV2 = {
     statusCode: 200
