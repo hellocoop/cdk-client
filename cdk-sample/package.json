@@ -5,8 +5,11 @@
     "build": "tsc",
     "watch": "tsc -w",
     "cdk": "cdk",
-    "tail": "aws logs tail /aws/lambda/HelloClient --follow",
-    "tail-test": "aws logs tail /aws/lambda/helloLoginTrigger --follow",
+    "tail:client": "aws logs tail /aws/lambda/HelloClient --follow",
+    "tail:authorizer": "aws logs tail /aws/lambda/HelloClientAuthorizer --follow",
+    "tail:api": "aws logs tail /aws/apigateway/SampleApiLambda --follow",
+    "tail:sync": "aws logs tail /aws/lambda/loginSyncSample --follow",
+    "tail": "npm-run-all --parallel tail:*",
     "canary": "npm install @hellocoop/cdk-client@canary && cdk deploy --all"
   },
   "devDependencies": {
@@ -20,6 +23,7 @@
     "@hellocoop/cdk-client": "^2.0.0-canary.8",
     "aws-cdk-lib": "2.130.0",
     "constructs": "^10.0.0",
+    "npm-run-all": "^4.1.5",
     "source-map-support": "^0.5.21"
   }
 }
