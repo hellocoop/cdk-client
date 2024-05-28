@@ -1,4 +1,4 @@
-// simple authorizer function
+// studpid simple authorizer function for testing
 
 exports.handler = async (event) => {
     console.log('Received event:', JSON.stringify(event, null, 2));
