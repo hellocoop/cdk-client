@@ -46,13 +46,16 @@ const loginSync = async (props: LoginSyncParams):Promise<LoginSyncResponse> => {
   
   try {
     const result = await client.send(command);
-    console.log(`loginSync response from ${LOGIN_SYNC_FUNCTION_ARN}:`, JSON.stringify(result, null, 2));
-    console.log('Payload', result.Payload?.toString());
-    // return result.Payload && JSON.parse(result.Payload.toString());
-    return {}
+    const status = result.$metadata.httpStatusCode
+    if (status !== 200) {
+      console.error(`Error invoking function ${LOGIN_SYNC_FUNCTION_ARN}:`, result);
+      return {}
+    }
+    const response = Buffer.from(result.Payload as Uint8Array).toString('utf8');
+    console.log(`loginSync response from ${LOGIN_SYNC_FUNCTION_ARN}:`, JSON.stringify(response, null, 2));
+    return response as LoginSyncResponse
   } catch (error) {
     console.error(`Error invoking function ${LOGIN_SYNC_FUNCTION_ARN}:`, error);
-    // throw error;
   }
   return {}
 }
@@ -65,9 +68,6 @@ const config: Config =
 
 if (!isConfigured)
   configure(config)
-
-console.log('config', JSON.stringify(config, null, 2));
-console.log('LOGIN_SYNC_FUNCTION_ARN', LOGIN_SYNC_FUNCTION_ARN)
 
 const convertToHelloRequest = (event: APIGatewayProxyEventV2 ): HelloRequest => {
   const { headers, cookies, queryStringParameters, requestContext } = event
