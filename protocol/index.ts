@@ -15,8 +15,6 @@ import {
 
 import { serialize } from 'cookie'
 
-// Load environment variables
-const { CLIENT_ID, HELLO_COOKIE_SECRET } = process.env;
 
 const LOGIN_SYNC_FUNCTION_ARN = process.env.LOGIN_SYNC_FUNCTION_ARN
 
@@ -30,8 +28,6 @@ type LoginSyncParams = {
 
 const logDebug = process.env.HELLO_DEBUG 
 
-console.log('isConfigured:', isConfigured)
-console.log('logDebug:', logDebug)
 
 const loginSync = async (props: LoginSyncParams):Promise<LoginSyncResponse> => {
 
@@ -162,10 +158,6 @@ const handler = async (event: APIGatewayProxyEventV2, context: Context): Promise
   // const path = requestContext?.http?.path;
   // console.log('event', JSON.stringify(event, null, 2));
 
-
-
-  // TBD - logging empty values
-  if (logDebug) console.log('handler config:', JSON.stringify(config, null, 2));
 
   const result: APIGatewayProxyStructuredResultV2 = {
     statusCode: 200
