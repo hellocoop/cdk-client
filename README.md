@@ -37,6 +37,8 @@ const helloClient = new HelloClientConstruct(this, 'HelloClient', {
     // - Set to true to enable SameSite attribute to Strict
     logDebug?: boolean;
     // - Set to true to enable debug logging
+    helloDomain?: string;
+    // - Set to hello-beta.net to use the Hellō Beta service - note this is NOT stable!
 });
 
 // add Hello Client Lambda origin as a behavior to a Cloud Front Distribution
