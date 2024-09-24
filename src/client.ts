@@ -24,6 +24,7 @@ export interface HelloClientConstructProps {
   sameSiteStrict?: boolean;
   cookieToken?: boolean;
   logDebug?: boolean;
+  timeout?: cdk.Duration;
 }
 
 const zipFilePath = path.join(__dirname, 'protocol.zip');
@@ -70,6 +71,7 @@ export class HelloClientConstruct extends Construct {
           handler: 'index.handler',
           code: lambda.Code.fromAsset(zipFilePath),
           environment,
+          timeout: props.timeout || cdk.Duration.seconds(30),
         });
 
         // if a loginFunctionTrigger is provided, attach a policy to the lambda function
