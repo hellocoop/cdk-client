@@ -46,13 +46,15 @@ const loginSync = async (props: LoginSyncParams):Promise<LoginSyncResponse> => {
   
   try {
     const result = await client.send(command);
-    console.log('loginSync response:', JSON.stringify(result, null, 2));
+    console.log(`loginSync response from ${LOGIN_SYNC_FUNCTION_ARN}:`, JSON.stringify(result, null, 2));
+    console.log('Payload', result.Payload?.toString());
     // return result.Payload && JSON.parse(result.Payload.toString());
     return {}
   } catch (error) {
-    console.error('Error invoking function:', error);
-    throw error;
+    console.error(`Error invoking function ${LOGIN_SYNC_FUNCTION_ARN}:`, error);
+    // throw error;
   }
+  return {}
 }
 
 const config: Config = 
