@@ -23,6 +23,7 @@ export interface HelloClientConstructProps {
   scopes?: Scope[];
   sameSiteStrict?: boolean;
   cookieToken?: boolean;
+  logDebug?: boolean;
 }
 
 const zipFilePath = path.join(__dirname, 'protocol.zip');
@@ -58,7 +59,9 @@ export class HelloClientConstruct extends Construct {
         if (props.sameSiteStrict)
           environment['HELLO_SAME_SITE_STRICT'] = 'true'
         if (props.cookieToken)
-          environment['HELLO_COOKIE_TOKEN'] = 'true'          
+          environment['HELLO_COOKIE_TOKEN'] = 'true'    
+        if (props.logDebug)
+          environment['HELLO_DEBUG'] = 'true'  
 
         const functionName = props.functionName || 'HelloClient'
         this.lambdaFunction = new lambda.Function(this, functionName, {
