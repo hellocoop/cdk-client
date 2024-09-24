@@ -1,6 +1,6 @@
 {
   "name": "@hellocoop/cdk-client",
-  "version": "2.1.1-canary.10",
+  "version": "2.2.0",
   "description": "Hellō Client CDK Construct https://hello.dev",
   "repository": {
     "type": "git",
