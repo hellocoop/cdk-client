@@ -30,6 +30,9 @@ type LoginSyncParams = {
 
 const logDebug = process.env.HELLO_DEBUG 
 
+console.log('isConfigured:', isConfigured)
+console.log('logDebug:', logDebug)
+
 const loginSync = async (props: LoginSyncParams):Promise<LoginSyncResponse> => {
 
   if (logDebug) console.log('loginSync passed:', JSON.stringify(props, null, 2));
@@ -159,8 +162,7 @@ const handler = async (event: APIGatewayProxyEventV2, context: Context): Promise
   // const path = requestContext?.http?.path;
   // console.log('event', JSON.stringify(event, null, 2));
 
-console.log('isConfigured:', isConfigured)
-console.log('logDebug:', logDebug)
+
 
   // TBD - logging empty values
   if (logDebug) console.log('handler config:', JSON.stringify(config, null, 2));
