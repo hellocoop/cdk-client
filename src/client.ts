@@ -18,6 +18,7 @@ export interface HelloClientConstructProps {
   loginSyncFunctionArn?: string;
   functionName?: string;
   hostname?: string;
+  helloDomain?: string;
   route?: string;
   providerHints?: ProviderHint[];
   scopes?: Scope[];
@@ -51,6 +52,8 @@ export class HelloClientConstruct extends Construct {
           environment['LOGIN_SYNC_FUNCTION_ARN'] = loginSyncFunctionArn
         if (props.hostname) 
           environment['HELLO_HOST'] = props.hostname
+        if (props.helloDomain)
+          environment['HELLO_DOMAIN'] = props.helloDomain
         if (props.route) 
           environment['HELLO_API_ROUTE'] = props.route
         if (props.providerHints)
