@@ -37,9 +37,9 @@
     "build-authorizer": "cd authorizer && npm run build",
     "build": "npm run build-protocol && npm run build-authorizer && tsc",
     "install-protocol": "cd protocol && npm install",
-    "install-cdk-test": "cd cdk-test && npm install",
+    "install-cdk-sample": "cd cdk-sample && npm install",
     "install-authorize": "cd authorizer && npm install",
-    "install-all": "npm install && npm run install-protocol && npm run install-authorize",
+    "install-all": "npm install && npm run install-protocol && npm run install-authorize && npm run install-cdk-sample",
     "canary": "npm run build && npm version prerelease --preid=canary && npm publish --tag=canary"
   },
   "devDependencies": {
