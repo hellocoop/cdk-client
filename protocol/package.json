@@ -33,7 +33,7 @@
     "node": ">=18"
   },
   "dependencies": {
-    "@hellocoop/router": "~1.8.7",
+    "@hellocoop/router": "~1.14.1",
     "cookie": "^0.6.0"
   },
   "devDependencies": {

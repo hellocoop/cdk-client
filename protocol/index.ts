@@ -1,35 +1,37 @@
 import { APIGatewayProxyEventV2, APIGatewayProxyStructuredResultV2, Context } from 'aws-lambda';
 import { LambdaClient, InvokeCommand } from "@aws-sdk/client-lambda"
+import { Claims } from '@hellocoop/types'
 
-
-import {
+import { 
   router,
-  HelloResponse,
+  HelloResponse, 
   HelloRequest,
+  LoginSyncResponse, 
   clearAuthCookieParams,
-  getAuthfromCookies,
   isConfigured,
   configure,
   Config,
-  configuration,
-  LoginSyncParams, 
-  LoginSyncResponse
-} from '@hellocoop/router';
+} from '@hellocoop/router'
 
 import { serialize } from 'cookie'
 
 // Load environment variables
 const { CLIENT_ID, HELLO_COOKIE_SECRET } = process.env;
 
-
-
 const LOGIN_SYNC_FUNCTION_ARN = process.env.LOGIN_SYNC_FUNCTION_ARN
 
 const client = new LambdaClient();
 
+type LoginSyncParams = {
+  token: string,
+  payload: Claims,
+  target_uri: string,
+}
+
+
 const loginSync = async (props: LoginSyncParams):Promise<LoginSyncResponse> => {
 
-  console.log('loginSync', JSON.stringify(props, null, 2));
+  console.log('loginSync passed:', JSON.stringify(props, null, 2));
   
   if (!LOGIN_SYNC_FUNCTION_ARN) {  
     console.error('No login trigger function defined')
@@ -38,15 +40,14 @@ const loginSync = async (props: LoginSyncParams):Promise<LoginSyncResponse> => {
 
   const command = new InvokeCommand({
     FunctionName: LOGIN_SYNC_FUNCTION_ARN,
-    Payload: JSON.stringify(props.payload),
+    Payload: JSON.stringify(props),
     InvocationType: 'RequestResponse',
-
   });
   
   try {
     const result = await client.send(command);
-    return undefined as any
-    // return result.Payload && JSON.parse(result.Payload.toString());
+    console.log('loginSync response:', JSON.stringify(result, null, 2));
+    return result.Payload && JSON.parse(result.Payload.toString());
   } catch (error) {
     console.error('Error invoking function:', error);
     throw error;
@@ -58,10 +59,12 @@ const config: Config =
     ?  { loginSync }
     : {}
 
-console.log('config', JSON.stringify(config, null, 2));
 
 if (!isConfigured)
   configure(config)
+
+console.log('config', JSON.stringify(config, null, 2));
+console.log('LOGIN_SYNC_FUNCTION_ARN', LOGIN_SYNC_FUNCTION_ARN)
 
 const convertToHelloRequest = (event: APIGatewayProxyEventV2 ): HelloRequest => {
   const { headers, cookies, queryStringParameters, requestContext } = event
@@ -74,6 +77,13 @@ const convertToHelloRequest = (event: APIGatewayProxyEventV2 ): HelloRequest => 
     setAuth: (a) => { auth = a; },
     method: requestContext?.http?.method as any,
     body: () => event.body as any,
+    frameWork: 'aws-lambda',
+    loginSyncWrapper: (loginSync, params) => {
+      return loginSync(params)
+    },
+    logoutSyncWrapper: (logoutSync) => {
+      return logoutSync({event})
+    }
   };
 };
 
@@ -105,10 +115,25 @@ const convertToHelloResponse = ( response: APIGatewayProxyStructuredResultV2 ): 
         if (!response?.cookies) response.cookies = []
         response.cookies.push(serialize(name, value, options))
       },
-      setHeader: (name: string, value: string) => {
-        if (!response?.headers) response.headers = {}
-        response.headers[name] = value
-      },
+      getHeaders: () => response?.headers || {} as any,
+      setHeader: (name: string, value: string | string[]) => {
+        if (Array.isArray(value)) {
+            if (name.toLowerCase() === 'set-cookie') {
+                value.forEach(val => { 
+                  if (!response?.headers) response.headers = {}
+                  response.headers[name] = val
+                 }) // Append each cookie individually
+            } else {
+              if (!response?.headers) response.headers = {}
+              response.headers[name] = value.join(', '); // Combine array values into a single string separated by commas
+            }
+        } else {
+          if (!response?.headers) response.headers = {}
+          response.headers[name] = value;
+        }
+    },  
+
+
       status: ( statusCode: number) => { 
         response.statusCode = statusCode
         return { send }
