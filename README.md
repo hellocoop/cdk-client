@@ -52,11 +52,47 @@ distribution.addBehavior(HELLO_API_ROUTE, new origins.FunctionUrlOrigin(helloCli
 
 ```
 
+## loginSyncFunction
 
+You provide this Lambda to be called on successful login. It is passed:
 
+```json
+{
+    "token": "ey ... ID Token for independent verification ...",
+    "payload": {
+        "iss": "https://issuer.hello.coop",
+        "aud": "2000a054-aa09-45a3-9f62-26e03ee9dc76",
+        "nonce": "4a6fc9b2-0f47-4105-a367-b9ae0ca12784",
+        "jti": "jti_MUYT099WI3g0h7MDiRuVMhHA_c7g",
+        "sub": "66752aed-9cc2-4d17-875f-379b1a578f9a",
+        "name": "Dick Hardt",
+        "picture": "https://pictures.hello.coop/r/eebce734-44c0-4c39-8161-ba77e08091f9.jpeg",
+        "email": "dick.hardt@gmail.com",
+        "email_verified": true,
+        "iat": 1727210134,
+        "exp": 1727210434
+    }
+}
+```
 
+You can then 
+- create a user if they don't exist
+- run a policy and deny access
+- change what is returned by auth
+- change the path where the user will be redirected
 
-See TBD for details on `HelloClientConstruct`
+All of the properties are optional:
+
+```json
+{  
+    "accessDenied": true,           // will deny access
+    "updatedAuth": {                // will update what is returned by the auth operation
+        "role":"admin"
+    },
+    "target_uri": "/new_location"   // path to send user when complete
+}
+```
+
 
 ## Client Usage
 
