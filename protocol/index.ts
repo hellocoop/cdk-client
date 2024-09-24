@@ -28,10 +28,11 @@ type LoginSyncParams = {
   target_uri: string,
 }
 
+const debugLog = process.env.HELLO_DEBUG 
 
 const loginSync = async (props: LoginSyncParams):Promise<LoginSyncResponse> => {
 
-  console.log('loginSync passed:', JSON.stringify(props, null, 2));
+  if (debugLog) console.log('loginSync passed:', JSON.stringify(props, null, 2));
   
   if (!LOGIN_SYNC_FUNCTION_ARN) {  
     console.error('No login trigger function defined')
@@ -52,7 +53,9 @@ const loginSync = async (props: LoginSyncParams):Promise<LoginSyncResponse> => {
       return {}
     }
     const response = Buffer.from(result.Payload as Uint8Array).toString('utf8');
-    console.log(`loginSync response from ${LOGIN_SYNC_FUNCTION_ARN}:`, JSON.stringify(response, null, 2));
+
+    if (debugLog) console.log(`loginSync response from ${LOGIN_SYNC_FUNCTION_ARN}:`, JSON.stringify(response, null, 2));
+
     return response as LoginSyncResponse
   } catch (error) {
     console.error(`Error invoking function ${LOGIN_SYNC_FUNCTION_ARN}:`, error);
@@ -68,6 +71,9 @@ const config: Config =
 
 if (!isConfigured)
   configure(config)
+
+console.log('isConfigured:', isConfigured)
+console.log('debugLog:', debugLog)
 
 const convertToHelloRequest = (event: APIGatewayProxyEventV2 ): HelloRequest => {
   const { headers, cookies, queryStringParameters, requestContext } = event
@@ -151,7 +157,9 @@ const handler = async (event: APIGatewayProxyEventV2, context: Context): Promise
   const path = requestContext?.http?.path;
 
   // console.log('event', JSON.stringify(event, null, 2));
-  console.log('handler config:', JSON.stringify(config, null, 2));
+
+  // TBD - logging empty values
+  if (debugLog) console.log('handler config:', JSON.stringify(config, null, 2));
 
   const result: APIGatewayProxyStructuredResultV2 = {
     statusCode: 200
