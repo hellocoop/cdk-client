@@ -60,6 +60,7 @@ export class ClientSampleStack extends cdk.Stack {
       scopes: SCOPES,                 // optional
       loginSyncFunctionArn,           // optional
       cookieToken: true,              // optional - default is false, returns the token in a cookie with op=auth
+      logDebug: true,                 // optional - default is false, logs debug information
     });
 
 
