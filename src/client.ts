@@ -26,6 +26,9 @@ export interface HelloClientConstructProps {
   cookieToken?: boolean;
   logDebug?: boolean;
   timeout?: cdk.Duration;
+  // Cognito
+  cognitoClientID?: string;
+  cognitoClaims?: string[];
 }
 
 const zipFilePath = path.join(__dirname, 'protocol.zip');
@@ -58,15 +61,25 @@ export class HelloClientConstruct extends Construct {
           environment['HELLO_API_ROUTE'] = props.route
         if (props.providerHints)
           environment['HELLO_PROVIDER_HINTS'] = props.providerHints.join(' ')
-        if (props.scopes)
-          environment['HELLO_SCOPES'] = props.scopes.join(' ')
         if (props.sameSiteStrict)
           environment['HELLO_SAME_SITE_STRICT'] = 'true'
         if (props.cookieToken)
           environment['HELLO_COOKIE_TOKEN'] = 'true'    
         if (props.logDebug)
           environment['HELLO_DEBUG'] = 'true'  
-
+        if (props.scopes) {
+          environment['HELLO_SCOPES'] = props.scopes.join(' ')
+          const claims = new Set(props.scopes) as Set<string>
+          if (claims.has('email'))
+            claims.add('email_verified')
+          claims.delete('openid')
+          environment['HELLO_CLAIMS'] = Array.from(claims).join(' ')
+        }
+        if (props.cognitoClientID)
+          environment['COGNITO_CLIENT_ID'] = props.cognitoClientID
+        if (props.cognitoClaims)
+          environment['COGNITO_CLAIMS'] = props.cognitoClaims.join(' ')
+        
         const functionName = props.functionName || 'HelloClient'
         this.lambdaFunction = new lambda.Function(this, functionName, {
           functionName,

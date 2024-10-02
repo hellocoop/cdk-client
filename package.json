@@ -44,6 +44,8 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.134",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/jwk-to-pem": "^2.0.3",
     "@types/node": "^18.2.2",
     "rimraf": "^5.0.5",
     "typescript": "^5.3.3"
@@ -56,6 +58,8 @@
     "@hellocoop/constants": "^1.0.7",
     "@hellocoop/types": "^1.0.15",
     "aws-cdk-lib": "^2.130.0",
-    "constructs": "^10.3.0"
+    "constructs": "^10.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "jwk-to-pem": "^2.0.6"
   }
 }
