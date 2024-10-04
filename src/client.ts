@@ -31,7 +31,8 @@ export interface HelloClientConstructProps {
   cognitoClaims?: string[];
 }
 
-const zipFilePath = path.join(__dirname, 'protocol.zip');
+const zipProtocolPath = path.join(__dirname, 'protocol.zip');
+const zipAuthorizerPath = path.join(__dirname, 'authorizer.zip');
 
 export class HelloClientConstruct extends Construct {
     public readonly lambdaFunction: lambda.Function; // use this in API Gateway
@@ -85,7 +86,7 @@ export class HelloClientConstruct extends Construct {
           functionName,
           runtime: lambda.Runtime.NODEJS_18_X, 
           handler: 'index.handler',
-          code: lambda.Code.fromAsset(zipFilePath),
+          code: lambda.Code.fromAsset(zipProtocolPath),
           environment,
           timeout: props.timeout || cdk.Duration.seconds(30),
         });
@@ -111,7 +112,7 @@ export class HelloClientConstruct extends Construct {
         this.authorizerLambda = new lambda.Function(this, 'Authorizer', {
           functionName: 'HelloClientAuthorizer',
           runtime: lambda.Runtime.NODEJS_18_X,
-          code: lambda.Code.fromAsset(path.join(__dirname,'authorizer')),
+          code: lambda.Code.fromAsset(zipAuthorizerPath),
           handler: 'index.handler',
           environment: {
             HELLO_COOKIE_SECRET,

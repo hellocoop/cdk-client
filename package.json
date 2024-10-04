@@ -43,10 +43,13 @@
     "canary": "npm run build && npm version prerelease --preid=canary && npm publish --tag=canary"
   },
   "devDependencies": {
+    "@hellocoop/constants": "^1.1.6",
+    "@hellocoop/types": "^1.1.6",
     "@types/aws-lambda": "^8.10.134",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/jwk-to-pem": "^2.0.3",
     "@types/node": "^18.2.2",
+    "constructs": "^10.3.0",
     "rimraf": "^5.0.5",
     "typescript": "^5.3.3"
   },
@@ -55,11 +58,6 @@
   },
   "dependencies": {
     "@aws-sdk/client-lambda": "^3.533.0",
-    "@hellocoop/constants": "^1.0.7",
-    "@hellocoop/types": "^1.0.15",
-    "aws-cdk-lib": "^2.130.0",
-    "constructs": "^10.3.0",
-    "jsonwebtoken": "^9.0.2",
-    "jwk-to-pem": "^2.0.6"
+    "aws-cdk-lib": "^2.130.0"
   }
 }

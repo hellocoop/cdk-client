@@ -44,7 +44,7 @@ const verifyHelloToken = (encryptedStr: string) => {
 
 const generateAcceptResponse = (sub: string, context: any) => {
 
-  const response = {
+  const response: APIGatewayAuthorizerResult = {
     principalId: sub,
     policyDocument: {
       Version: "2012-10-17",
@@ -61,7 +61,7 @@ const generateAcceptResponse = (sub: string, context: any) => {
   return response 
 }
 
-const DENY_RESPONSE = {
+const DENY_RESPONSE: APIGatewayAuthorizerResult = {
     principalId: "unknown",
     policyDocument: {
         Version: "2012-10-17",
