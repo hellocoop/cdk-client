@@ -9,6 +9,8 @@ import * as path from 'path';
 
 import { Scope, ProviderHint } from '@hellocoop/types'
 
+import { version } from '../package.json';
+
 export { Scope, ProviderHint }
 
 export interface HelloClientConstructProps {
@@ -51,6 +53,7 @@ export class HelloClientConstruct extends Construct {
         const environment:{[key: string]: string;} = {
           HELLO_COOKIE_SECRET,
           HELLO_CLIENT_ID: props.clientID,
+          HELLO_CDK_CLIENT_VERSION: version,
         }
         if (loginSyncFunctionArn)
           environment['LOGIN_SYNC_FUNCTION_ARN'] = loginSyncFunctionArn
@@ -76,10 +79,6 @@ export class HelloClientConstruct extends Construct {
           claims.delete('openid')
           environment['HELLO_CLAIMS'] = Array.from(claims).join(' ')
         }
-        if (props.cognitoClientID)
-          environment['COGNITO_CLIENT_ID'] = props.cognitoClientID
-        if (props.cognitoClaims)
-          environment['COGNITO_CLAIMS'] = props.cognitoClaims.join(' ')
         
         const functionName = props.functionName || 'HelloClient'
         this.lambdaFunction = new lambda.Function(this, functionName, {
@@ -109,15 +108,23 @@ export class HelloClientConstruct extends Construct {
         })
 
         // Create the authorizer lambda
+        const authorizerEnvironment:{[key: string]: string;} = {
+          HELLO_COOKIE_SECRET,
+          HELLO_CLAIMS: environment['HELLO_CLAIMS'],
+          COGNITO_CLIENT_ID: props.cognitoClientID || '',
+          COGNITO_CLAIMS: props.cognitoClaims?.join(' ') || '',
+          HELLO_CDK_CLIENT_VERSION: version,
+        }
+        if (props.logDebug)
+          authorizerEnvironment['HELLO_DEBUG'] = 'true'  
+
+  
         this.authorizerLambda = new lambda.Function(this, 'Authorizer', {
           functionName: 'HelloClientAuthorizer',
           runtime: lambda.Runtime.NODEJS_18_X,
           code: lambda.Code.fromAsset(zipAuthorizerPath),
           handler: 'index.handler',
-          environment: {
-            HELLO_COOKIE_SECRET,
-            HELLO_CLIENT_ID: props.clientID,
-          },
+          environment: authorizerEnvironment,
         });
 
     }

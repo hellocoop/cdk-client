@@ -10,6 +10,10 @@ import jwkToPem from 'jwk-to-pem'
 
 const { COGNITO_CLIENT_ID, HELLO_COOKIE_SECRET, COGNITO_CLAIMS, HELLO_CLAIMS, HELLO_DEBUG } = process.env;
 
+if (HELLO_DEBUG) {
+  console.log('HELLO_DEBUG:', HELLO_DEBUG);
+  console.log('HELLO_CDK_CLIENT_VERSION:', process.env.HELLO_CDK_CLIENT_VERSION);
+}
 // Function to convert a URL-safe base64 string to a Uint8Array
 function urlSafeBase64ToUint8Array(base64String: string): Uint8Array {
     const base64 = base64String.replace(/-/g, '+').replace(/_/g, '/');
@@ -168,7 +172,7 @@ const cognitoTokenHandler = async ( token: string ): Promise<APIGatewayAuthorize
   
         return response
     } catch (error) {
-        console.error('error', error)
+        console.error('cognitoTokenHandler:error', error)
         return DENY_RESPONSE
     }
 
@@ -192,7 +196,7 @@ const helloTokenHandler = async ( token: string ): Promise<APIGatewayAuthorizerR
     if (HELLO_DEBUG) console.log('helloTokenHandler:response', JSON.stringify(response, null, 2))
     return response
   } catch (error) {
-      console.error('error', error)
+      console.error('helloTokenHandler:error', error)
       return DENY_RESPONSE
   }
 }

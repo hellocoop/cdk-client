@@ -27,7 +27,10 @@ type LoginSyncParams = {
 }
 
 const logDebug = process.env.HELLO_DEBUG 
-
+if (logDebug) {
+    console.log('HELLO_DEBUG:', logDebug);
+    console.log('HELLO_CDK_CLIENT_VERSION:', process.env.HELLO_CDK_CLIENT_VERSION);
+}
 
 const loginSync = async (props: LoginSyncParams):Promise<LoginSyncResponse> => {
 
