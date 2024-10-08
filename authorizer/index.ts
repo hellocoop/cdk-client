@@ -103,6 +103,10 @@ const getKey = async (kid: string, alg: string, iss: string): Promise<string> =>
 
 const cognitoTokenHandler = async ( token: string ): Promise<APIGatewayAuthorizerResult> => {
 
+    if (HELLO_DEBUG) {
+      console.log('cognitoTokenHandler:token', token)
+      console.log('cognitoTokenHandler:', JSON.stringify({COGNITO_CLIENT_ID,COGNITO_CLAIMS}, null, 2))
+    }
     try {
         const j = jwt.decode(token, {complete: true})
         if (!j) {
@@ -149,6 +153,8 @@ const cognitoTokenHandler = async ( token: string ): Promise<APIGatewayAuthorize
             return DENY_RESPONSE
         }
         const key = await getKey( kid, alg, iss )
+        if (HELLO_DEBUG) console.log('cognitoTokenHandler:', JSON.stringify({key,iss}, null, 2))
+
         const decoded = jwt.verify(token, key) as {[key: string]: string}
         // all good if we made it here 
 
@@ -158,10 +164,8 @@ const cognitoTokenHandler = async ( token: string ): Promise<APIGatewayAuthorize
           context[claim] = decoded[claim]
         }
         const response = generateAcceptResponse( sub, context )
-        if (HELLO_DEBUG) {
-          console.log('cognitoTokenHandler:token', token)
-          console.log('cognitoTokenHandler:response', JSON.stringify(response, null, 2))
-        }
+        if (HELLO_DEBUG) console.log('cognitoTokenHandler:response', JSON.stringify(response, null, 2))
+  
         return response
     } catch (error) {
         console.error('error', error)
@@ -171,6 +175,7 @@ const cognitoTokenHandler = async ( token: string ): Promise<APIGatewayAuthorize
 }
 
 const helloTokenHandler = async ( token: string ): Promise<APIGatewayAuthorizerResult> => {
+  if (HELLO_DEBUG) console.log('helloTokenHandler:token', token)
   try {
     const payload = verifyHelloToken(token)
     const { sub } = payload
@@ -184,10 +189,7 @@ const helloTokenHandler = async ( token: string ): Promise<APIGatewayAuthorizerR
       context[claim] = payload[claim]
     }
     const response = generateAcceptResponse( sub, context)
-    if (HELLO_DEBUG) {
-      console.log('helloTokenHandler:token', token)
-      console.log('helloTokenHandler:response', JSON.stringify(response, null, 2))
-    }
+    if (HELLO_DEBUG) console.log('helloTokenHandler:response', JSON.stringify(response, null, 2))
     return response
   } catch (error) {
       console.error('error', error)
