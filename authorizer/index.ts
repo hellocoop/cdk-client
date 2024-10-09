@@ -91,7 +91,7 @@ const getKey = async (kid: string, alg: string, iss: string): Promise<string> =>
     const jwks = await response.json()
     for (const key of jwks.keys) {
         const pem = jwkToPem(key)
-        pemCache[kid] = pem
+        pemCache[key.kid] = pem
     }
     if (pemCache[kid]) {
       return pemCache[kid]
@@ -114,46 +114,46 @@ const cognitoTokenHandler = async ( token: string ): Promise<APIGatewayAuthorize
     try {
         const j = jwt.decode(token, {complete: true})
         if (!j) {
-            console.error('invalid token')
+            console.error('cognitoTokenHandler:error: invalid token')
             return DENY_RESPONSE
         }
         const {header, payload} = j
         const { kid, alg } = header
         const { iss, aud, token_use, exp, iat, sub } = payload as JwtPayload
         if (!kid) {
-            console.error('missing kid')
+            console.error('cognitoTokenHandler:error: missing kid')
             return DENY_RESPONSE
         }
         if (!alg) {
-            console.error('missing alg')
+            console.error('cognitoTokenHandler:error: missing alg')
             return DENY_RESPONSE
         }
         if (!sub) {
-            console.error('missing sub')
+            console.error('cognitoTokenHandler:error: missing sub')
             return DENY_RESPONSE
         }
 
         if (!iss || !iss.startsWith('https://cognito-idp.')) {
-            console.error('unknown issuer', iss)
+            console.error('cognitoTokenHandler:error: unknown issuer', iss)
             return DENY_RESPONSE
         }
         if (!COGNITO_CLIENT_ID) {
-            console.error(`missing COGNITO_CLIENT_ID - Validating for client_id '${aud}'`)
+            console.error(`cognitoTokenHandler:error: missing COGNITO_CLIENT_ID - Validating for client_id '${aud}'`)
         } else if (aud !== COGNITO_CLIENT_ID) {
-            console.error(`invalid client_id '${aud}', expected '${COGNITO_CLIENT_ID}'`)
+            console.error(`cognitoTokenHandler:error: invalid client_id '${aud}', expected '${COGNITO_CLIENT_ID}'`)
             return DENY_RESPONSE
         }
         if (token_use !== 'id') {
-            console.error(`invalid token_use '${token_use}' - expected 'id'`)
+            console.error(`cognitoTokenHandler:error: invalid token_use '${token_use}' - expected 'id'`)
             return DENY_RESPONSE
         }
         const now = Math.floor(Date.now() / 1000)
         if (!exp || now > exp) {
-            console.error(`token expiry ${exp}, must be later than ${now}`)
+            console.error(`cognitoTokenHandler:error: token expiry ${exp}, must be later than ${now}`)
             return DENY_RESPONSE
         }
         if (!iat || now < iat) {
-            console.error(`token issued at ${iat}, must be earlier than ${now}`)
+            console.error(`cognitoTokenHandler:error: token issued at ${iat}, must be earlier than ${now}`)
             return DENY_RESPONSE
         }
         const key = await getKey( kid, alg, iss )
@@ -184,7 +184,7 @@ const helloTokenHandler = async ( token: string ): Promise<APIGatewayAuthorizerR
     const payload = verifyHelloToken(token)
     const { sub } = payload
     if (!sub) {
-      console.error('missing sub')
+      console.error('helloTokenHandler:error: missing sub')
       return DENY_RESPONSE
     }
     const claims = (HELLO_CLAIMS || 'email email_verified name picture').split(' ')
@@ -196,7 +196,7 @@ const helloTokenHandler = async ( token: string ): Promise<APIGatewayAuthorizerR
     if (HELLO_DEBUG) console.log('helloTokenHandler:response', JSON.stringify(response, null, 2))
     return response
   } catch (error) {
-      console.error('helloTokenHandler:error', error)
+      console.error('helloTokenHandler:error ', error)
       return DENY_RESPONSE
   }
 }
