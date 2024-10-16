@@ -79,6 +79,8 @@ export class HelloClientConstruct extends Construct {
           claims.delete('openid')
           environment['HELLO_CLAIMS'] = Array.from(claims).join(' ')
         }
+
+        console.log('hello client environment:', environment)
         
         const functionName = props.functionName || 'HelloClient'
         this.lambdaFunction = new lambda.Function(this, functionName, {
@@ -117,6 +119,8 @@ export class HelloClientConstruct extends Construct {
         }
         if (props.logDebug)
           authorizerEnvironment['HELLO_DEBUG'] = 'true'  
+
+        console.log('authorizerEnvironment:', authorizerEnvironment)
 
   
         this.authorizerLambda = new lambda.Function(this, 'Authorizer', {
