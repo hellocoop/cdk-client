@@ -203,6 +203,9 @@ const helloTokenHandler = async ( token: string ): Promise<APIGatewayAuthorizerR
   
 const handler = async (event: APIGatewayTokenAuthorizerEvent, context: Context): Promise<APIGatewayAuthorizerResult> => {
     let token = event?.authorizationToken;
+
+    console.log('token:', token)
+
     if (!token) {
         console.error('missing token')
         return DENY_RESPONSE
