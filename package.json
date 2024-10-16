@@ -33,9 +33,10 @@
   "main": "dist/client.js",
   "types": "dist/client.d.ts",
   "scripts": {
+    "clean": "rimraf dist",
     "build-protocol": "cd protocol && npm run build",
     "build-authorizer": "cd authorizer && npm run build",
-    "build": "npm run build-protocol && npm run build-authorizer && tsc",
+    "build": "npm run clean && tsc && npm run build-protocol && npm run build-authorizer",
     "install-protocol": "cd protocol && npm install",
     "install-cdk-sample": "cd cdk-sample && npm install",
     "install-authorize": "cd authorizer && npm install",
