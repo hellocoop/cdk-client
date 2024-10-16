@@ -51,9 +51,9 @@ export class HelloClientConstruct extends Construct {
                 : null )
         const HELLO_COOKIE_SECRET = props.cookieSecret || crypto.randomBytes(32).toString('hex')
         const environment:{[key: string]: string;} = {
+          HELLO_CDK_CLIENT_VERSION: version,
           HELLO_COOKIE_SECRET,
           HELLO_CLIENT_ID: props.clientID,
-          HELLO_CDK_CLIENT_VERSION: version,
         }
         if (loginSyncFunctionArn)
           environment['LOGIN_SYNC_FUNCTION_ARN'] = loginSyncFunctionArn
@@ -109,14 +109,16 @@ export class HelloClientConstruct extends Construct {
 
         // Create the authorizer lambda
         const authorizerEnvironment:{[key: string]: string;} = {
+          HELLO_CDK_CLIENT_VERSION: version,
           HELLO_COOKIE_SECRET,
           HELLO_CLAIMS: environment['HELLO_CLAIMS'],
-          COGNITO_CLIENT_ID: props.cognitoClientID || '',
-          COGNITO_CLAIMS: props.cognitoClaims?.join(' ') || '',
-          HELLO_CDK_CLIENT_VERSION: version,
         }
         if (props.logDebug)
-          authorizerEnvironment['HELLO_DEBUG'] = 'true'  
+          authorizerEnvironment['HELLO_DEBUG'] = 'true'
+        if (props.cognitoClaims)
+          authorizerEnvironment['COGNITO_CLAIMS'] = props.cognitoClaims.join(' ')
+        if (props.cognitoClientID)
+          authorizerEnvironment['COGNITO_CLIENT_ID'] = props.cognitoClientID  
   
         this.authorizerLambda = new lambda.Function(this, 'Authorizer', {
           functionName: 'HelloClientAuthorizer',
