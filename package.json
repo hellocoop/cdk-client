@@ -41,7 +41,8 @@
     "install-cdk-sample": "cd cdk-sample && npm install",
     "install-authorize": "cd authorizer && npm install",
     "install-all": "npm install && npm run install-protocol && npm run install-authorize && npm run install-cdk-sample",
-    "canary": "npm run build && npm version prerelease --preid=canary && npm publish --tag=canary && cd cdk-sample && npm run canary"
+    "canary": "npm run build && npm version prerelease --preid=canary && npm publish --tag=canary",
+    "cc": "npm run canary && cd cdk-sample && npm run canary"
   },
   "devDependencies": {
     "@hellocoop/definitions": "^1.0.1",
