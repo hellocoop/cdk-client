@@ -27,7 +27,7 @@
     "url": "https://github.com/hellocoop/packages/issues"
   },
   "scripts": {
-    "build": "npx tsc && zip -q -r ../dist/protocol.zip . -i '*.js' -i '*.json'"
+    "build": "npm i @hellocoop/api@latest && npx tsc && zip -q -r ../dist/protocol.zip . -i '*.js' -i '*.json'"
   },
   "engines": {
     "node": ">=18"
