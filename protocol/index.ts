@@ -1,6 +1,6 @@
 import { APIGatewayProxyEventV2, APIGatewayProxyStructuredResultV2, Context } from 'aws-lambda';
 import { LambdaClient, InvokeCommand } from "@aws-sdk/client-lambda"
-import { Claims } from '@hellocoop/types'
+import { Claims } from '@hellocoop/definitions'
 
 import { 
   router,
@@ -11,7 +11,7 @@ import {
   isConfigured,
   configure,
   Config,
-} from '@hellocoop/router'
+} from '@hellocoop/api'
 
 import { serialize } from 'cookie'
 
