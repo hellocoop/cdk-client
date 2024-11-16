@@ -54,8 +54,8 @@ export class ClientSampleStack extends cdk.Stack {
     // Create the Hello Client Lambda and functionUrl
     const helloClient = new HelloClientConstruct(this, 'HelloClient', {
       clientID: CLIENT_ID,            // required
-      hostname: HOSTNAME,             // recommended
-      route: HELLO_API_ROUTE,         // optional
+      // hostname: HOSTNAME,             // recommended
+      // route: HELLO_API_ROUTE,         // optional
       providerHints: PROVIDER_HINTS,  // optional
       scopes: SCOPES,                 // optional
       loginSyncFunctionArn,           // optional
