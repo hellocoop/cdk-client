@@ -33,7 +33,7 @@
     "node": ">=18"
   },
   "dependencies": {
-    "@hellocoop/api": "^2.0.10",
+    "@hellocoop/api": "^2.0.11",
     "build": "^0.1.4",
     "cookie": "^1.0.1",
     "npm": "^10.9.0",
