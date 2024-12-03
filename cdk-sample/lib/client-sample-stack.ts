@@ -138,7 +138,7 @@ export class ClientSampleStack extends cdk.Stack {
     // The Lambda function for the sample API
     const sampleApiLambda = new lambda.Function(this, 'SampleApiLambda', {
       functionName: 'SampleApiLambda',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_22_X,
       code: lambda.Code.fromAsset('lambdas/sample-api'),
       handler: 'index.handler',
     });
@@ -146,7 +146,7 @@ export class ClientSampleStack extends cdk.Stack {
     // The Lambda function for the authorizer
     const authorizerLambda = new lambda.Function(this, 'AuthorizerLambda', {
       functionName: 'AuthorizerLambda',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_22_X,
       code: lambda.Code.fromAsset('lambdas/authorizer'),
       handler: 'index.handler',
     });

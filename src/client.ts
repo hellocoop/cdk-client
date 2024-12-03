@@ -83,7 +83,7 @@ export class HelloClientConstruct extends Construct {
         const functionName = props.functionName || 'HelloClient'
         this.lambdaFunction = new lambda.Function(this, functionName, {
           functionName,
-          runtime: lambda.Runtime.NODEJS_18_X, 
+          runtime: lambda.Runtime.NODEJS_22_X, 
           handler: 'index.handler',
           code: lambda.Code.fromAsset(zipProtocolPath),
           environment,
@@ -122,7 +122,7 @@ export class HelloClientConstruct extends Construct {
   
         this.authorizerLambda = new lambda.Function(this, 'Authorizer', {
           functionName: 'HelloClientAuthorizer',
-          runtime: lambda.Runtime.NODEJS_18_X,
+          runtime: lambda.Runtime.NODEJS_22_X,
           code: lambda.Code.fromAsset(zipAuthorizerPath),
           handler: 'index.handler',
           environment: authorizerEnvironment,
