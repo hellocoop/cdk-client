@@ -30,14 +30,11 @@
     "build": "npm i @hellocoop/api@latest && npx tsc && zip -q -r ../dist/protocol.zip . -i '*.js' -i '*.json'"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "dependencies": {
-    "@hellocoop/api": "^2.0.11",
-    "build": "^0.1.4",
-    "cookie": "^1.0.1",
-    "npm": "^10.9.0",
-    "run": "^1.5.0"
+    "@hellocoop/api": "^2.1.1",
+    "cookie": "^1.0.1"
   },
   "devDependencies": {
     "@types/cookie": "^0.6.0"
