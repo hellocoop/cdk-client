@@ -55,7 +55,7 @@
     "typescript": "^5.3.3"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "dependencies": {
     "@aws-sdk/client-lambda": "^3.533.0",

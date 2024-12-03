@@ -20,7 +20,7 @@
     "build": "npx tsc && zip -q -r ../dist/authorizer.zip . -i '*.js' -i '*.json'"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "dependencies": {
     "jsonwebtoken": "^9.0.2",
