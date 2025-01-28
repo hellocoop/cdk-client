@@ -94,13 +94,22 @@ const convertToHelloRequest = (event: APIGatewayProxyEventV2 ): HelloRequest => 
 
 console.log('event:', JSON.stringify(event, null, 2));
 
+console.log('headers:', JSON.stringify(headers, null, 2));
+
   let parsedBody: any = undefined;
+
   if (
     headers['content-type'] === 'application/x-www-form-urlencoded' ||
     headers['Content-Type'] === 'application/x-www-form-urlencoded'
   ) {
-    const body = event.body || '';
-    const params = new URLSearchParams(body);
+    const decodedBody = event.isBase64Encoded ? Buffer.from(event.body || '', 'base64').toString('utf-8') : event.body || '';
+
+console.log({ decodedBody });
+
+    const params = new URLSearchParams(decodedBody);
+
+console.log({ params });
+
     parsedBody = Object.fromEntries(params.entries());
 
     console.log('parsedBody:', parsedBody);
