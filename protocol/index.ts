@@ -11,10 +11,15 @@ import {
   isConfigured,
   configure,
   Config,
+  PackageMetadata,
 } from '@hellocoop/api'
 
 import { serialize } from 'cookie'
 
+// set name and version to provide in metadata
+import parentPackageJson from './package.json'
+const { name, version } = parentPackageJson;
+PackageMetadata.setMetadata(name, version);
 
 const LOGIN_SYNC_FUNCTION_ARN = process.env.LOGIN_SYNC_FUNCTION_ARN
 
@@ -78,10 +83,16 @@ if (LOGIN_SYNC_FUNCTION_ARN)
 if (!isConfigured)
   configure(config)
 
+if (config.logConfig)
+  console.log({ name, version });
+
 
 const convertToHelloRequest = (event: APIGatewayProxyEventV2 ): HelloRequest => {
   const { headers, cookies, queryStringParameters, requestContext } = event
   let auth: any = undefined
+
+
+console.log('event:', JSON.stringify(event, null, 2));
 
   let parsedBody: any = undefined;
   if (
@@ -91,6 +102,9 @@ const convertToHelloRequest = (event: APIGatewayProxyEventV2 ): HelloRequest => 
     const body = event.body || '';
     const params = new URLSearchParams(body);
     parsedBody = Object.fromEntries(params.entries());
+
+    console.log('parsedBody:', parsedBody);
+
   }
 
   return {
