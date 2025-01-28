@@ -76,6 +76,7 @@ export class ClientSampleStack extends cdk.Stack {
 
     // Create a S3 bucket
     const bucket = new s3.Bucket(this, 'bucket', {
+      bucketName: CLIENT_ID,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
     });
@@ -86,18 +87,16 @@ export class ClientSampleStack extends cdk.Stack {
       destinationBucket: bucket,
     });
 
-
-    // Create a CloudFront distribution
     const distribution = new cf.Distribution(this, 'distribution', {
       domainNames: [HOSTNAME],
       certificate,
       defaultRootObject: 'index.html',
       priceClass: cf.PriceClass.PRICE_CLASS_100,
       defaultBehavior: {
-        origin: new origins.S3Origin(bucket),
+        origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
         viewerProtocolPolicy: cf.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         allowedMethods: cf.AllowedMethods.ALLOW_GET_HEAD,
-      }
+      },
     });
 
     // add behavior for the Hello Client Lambda
