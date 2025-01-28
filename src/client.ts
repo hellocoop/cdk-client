@@ -28,6 +28,7 @@ export interface HelloClientConstructProps {
   cookieToken?: boolean;
   logDebug?: boolean;
   timeout?: cdk.Duration;
+  reservedConcurrentExecutions?: number;
   // Cognito
   cognitoClientID?: string;
   cognitoClaims?: string[];
@@ -88,6 +89,7 @@ export class HelloClientConstruct extends Construct {
           code: lambda.Code.fromAsset(zipProtocolPath),
           environment,
           timeout: props.timeout || cdk.Duration.seconds(30),
+          reservedConcurrentExecutions: props.reservedConcurrentExecutions ?? undefined, // Default to undefined if not set
         });
 
         // if a loginFunctionTrigger is provided, attach a policy to the lambda function
