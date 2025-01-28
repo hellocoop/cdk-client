@@ -82,6 +82,17 @@ if (!isConfigured)
 const convertToHelloRequest = (event: APIGatewayProxyEventV2 ): HelloRequest => {
   const { headers, cookies, queryStringParameters, requestContext } = event
   let auth: any = undefined
+
+  let parsedBody: any = undefined;
+  if (
+    headers['content-type'] === 'application/x-www-form-urlencoded' ||
+    headers['Content-Type'] === 'application/x-www-form-urlencoded'
+  ) {
+    const body = event.body || '';
+    const params = new URLSearchParams(body);
+    parsedBody = Object.fromEntries(params.entries());
+  }
+
   return {
     headers: () => headers as any,
     query: queryStringParameters as any,
@@ -89,7 +100,7 @@ const convertToHelloRequest = (event: APIGatewayProxyEventV2 ): HelloRequest => 
     getAuth: () => auth,
     setAuth: (a) => { auth = a; },
     method: requestContext?.http?.method as any,
-    body: () => event.body as any,
+    body: () => parsedBody || event.body as any,
     frameWork: 'aws-lambda',
     loginSyncWrapper: (loginSync, params) => {
       return loginSync(params)
