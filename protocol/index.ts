@@ -84,7 +84,7 @@ if (!isConfigured)
   configure(config)
 
 if (config.logConfig)
-  console.log({ name, version });
+  console.log('package',{ name, version });
 
 
 const convertToHelloRequest = (event: APIGatewayProxyEventV2 ): HelloRequest => {
