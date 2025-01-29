@@ -1,6 +1,6 @@
 {
   "name": "@hellocoop/lambda",
-  "version": "1.0.0",
+  "version": "2.6.1-canary.6",
   "description": "Lambda SDK for Hellō https://hello.dev",
   "repository": {
     "type": "git",
@@ -27,7 +27,8 @@
     "url": "https://github.com/hellocoop/packages/issues"
   },
   "scripts": {
-    "build": "npm i @hellocoop/api@latest && npx tsc && zip -q -r ../dist/protocol.zip . -i '*.js' -i '*.json'"
+    "sync-version": "jq --arg version \"$(jq -r '.version' ../package.json)\" '.version = $version' package.json > temp.json && mv temp.json package.json",
+    "build": "npm run sync-version && npm i @hellocoop/api@latest && npx tsc && zip -q -r ../dist/protocol.zip . -i '*.js' -i '*.json'"
   },
   "engines": {
     "node": ">=22"

@@ -91,10 +91,8 @@ const convertToHelloRequest = (event: APIGatewayProxyEventV2 ): HelloRequest => 
   const { headers, cookies, queryStringParameters, requestContext } = event
   let auth: any = undefined
 
-
-console.log('event:', JSON.stringify(event, null, 2));
-
-console.log('headers:', JSON.stringify(headers, null, 2));
+  if (config.logConfig)
+    console.log('event:', JSON.stringify(event, null, 2));
 
   let parsedBody: any = undefined;
 
@@ -103,27 +101,18 @@ console.log('headers:', JSON.stringify(headers, null, 2));
     headers['Content-Type'] === 'application/x-www-form-urlencoded'
   ) {
     const decodedBody = event.isBase64Encoded ? Buffer.from(event.body || '', 'base64').toString('utf-8') : event.body || '';
-
-console.log({ decodedBody });
-
     const params = new URLSearchParams(decodedBody);
-
-console.log({ params });
-
     parsedBody = Object.fromEntries(params.entries());
-
-    console.log('parsedBody:', parsedBody);
-
   }
 
-  return {
+  const req: HelloRequest = {
     headers: () => headers as any,
     query: queryStringParameters as any,
     path: requestContext?.http?.path as any,
     getAuth: () => auth,
     setAuth: (a) => { auth = a; },
     method: requestContext?.http?.method as any,
-    body: () => parsedBody || event.body as any,
+    body: parsedBody || event.body as any,
     frameWork: 'aws-lambda',
     loginSyncWrapper: (loginSync, params) => {
       return loginSync(params)
@@ -132,6 +121,8 @@ console.log({ params });
       return logoutSync({event})
     }
   };
+
+  return req
 };
 
 const convertToHelloResponse = ( response: APIGatewayProxyStructuredResultV2 ): HelloResponse => {
@@ -190,11 +181,6 @@ const convertToHelloResponse = ( response: APIGatewayProxyStructuredResultV2 ): 
 
 
 const handler = async (event: APIGatewayProxyEventV2, context: Context): Promise<APIGatewayProxyStructuredResultV2> => {
-  // const { headers, cookies, queryStringParameters, body, isBase64Encoded, requestContext } = event;
-  // const method = requestContext?.http?.method;
-  // const path = requestContext?.http?.path;
-  // console.log('event', JSON.stringify(event, null, 2));
-
 
   const result: APIGatewayProxyStructuredResultV2 = {
     statusCode: 200
