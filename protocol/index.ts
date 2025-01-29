@@ -145,9 +145,15 @@ const convertToHelloResponse = ( response: APIGatewayProxyStructuredResultV2 ): 
           response.body = JSON.stringify(data)
       },
       redirect: (url : string) => {
+
+console.log('redirecting to:', url);
+
         if (!response?.headers) response.headers = {}
         response.headers['Location'] = url
         response.statusCode = 302
+
+console.log('redirect reply:', JSON.stringify(response, null, 2));
+
       },
       setCookie: (name: string, value: string, options: any) => {
         if (!response?.cookies) response.cookies = []
@@ -169,9 +175,7 @@ const convertToHelloResponse = ( response: APIGatewayProxyStructuredResultV2 ): 
           if (!response?.headers) response.headers = {}
           response.headers[name] = value;
         }
-    },  
-
-
+      },  
       status: ( statusCode: number) => { 
         response.statusCode = statusCode
         return { send }
