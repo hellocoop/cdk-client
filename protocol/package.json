@@ -1,6 +1,6 @@
 {
   "name": "@hellocoop/lambda",
-  "version": "2.6.1-canary.6",
+  "version": "2.6.1-canary.7",
   "description": "Lambda SDK for Hellō https://hello.dev",
   "repository": {
     "type": "git",
