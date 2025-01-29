@@ -10,8 +10,8 @@
     "tail:api": "aws logs tail /aws/apigateway/SampleApiLambda --follow",
     "tail:sync": "aws logs tail /aws/lambda/loginSyncSample --follow",
     "tail": "npm-run-all --parallel tail:*",
-    "canary": "npm install @hellocoop/cdk-client@canary && cdk deploy --all",
-    "latest": "npm install @hellocoop/cdk-client@latest && cdk deploy --all"
+    "canary": "npm install @hellocoop/cdk-client@canary && npm list && cdk deploy --all",
+    "latest": "npm install @hellocoop/cdk-client@latest && npm list && cdk deploy --all"
   },
   "devDependencies": {
     "@aws-sdk/types": "^3.696.0",
