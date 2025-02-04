@@ -84,7 +84,7 @@ export class HelloClientConstruct extends Construct {
         const functionName = props.functionName || 'HelloClient'
         this.lambdaFunction = new lambda.Function(this, functionName, {
           functionName,
-          runtime: lambda.Runtime.NODEJS_22_X, 
+          runtime: lambda.Runtime.NODEJS_20_X, 
           handler: 'index.handler',
           code: lambda.Code.fromAsset(zipProtocolPath),
           environment,
