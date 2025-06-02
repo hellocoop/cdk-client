@@ -88,7 +88,7 @@ export class HelloClientConstruct extends Construct {
         const functionName = props.functionName || 'HelloClient'
         this.lambdaFunction = new lambda.Function(this, functionName, {
           functionName,
-          runtime: lambda.Runtime.NODEJS_20_X, 
+          runtime: lambda.Runtime.NODEJS_20_X, // @DICK any reason why we don't use NODEJS_22_X here?
           handler: 'index.handler',
           code: lambda.Code.fromAsset(zipProtocolPath),
           environment,
