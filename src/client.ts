@@ -16,6 +16,7 @@ export { Scope, ProviderHint }
 export interface HelloClientConstructProps {
   clientID: string;
   cookieSecret?: string;
+  cookieDomain?: string;
   loginSyncFunctionName?: string;
   loginSyncFunctionArn?: string;
   functionName?: string;
@@ -73,7 +74,9 @@ export class HelloClientConstruct extends Construct {
         if (props.sameSiteStrict)
           environment['HELLO_SAME_SITE_STRICT'] = 'true'
         if (props.cookieToken)
-          environment['HELLO_COOKIE_TOKEN'] = 'true'    
+          environment['HELLO_COOKIE_TOKEN'] = 'true'
+        if (props.cookieDomain)
+          environment['HELLO_COOKIE_DOMAIN'] = props.cookieDomain
         if (props.logDebug)
           environment['HELLO_DEBUG'] = 'true'  
         if (props.scopes) {

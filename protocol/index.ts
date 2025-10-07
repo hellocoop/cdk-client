@@ -74,7 +74,8 @@ const loginSync = async (props: LoginSyncParams):Promise<LoginSyncResponse> => {
 }
 
 const config: Config = {
-  logConfig: !!logDebug
+  logConfig: !!logDebug,
+  cookieDomain: process.env.HELLO_COOKIE_DOMAIN
 }
 
 if (LOGIN_SYNC_FUNCTION_ARN)
