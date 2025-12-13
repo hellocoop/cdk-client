@@ -1,6 +1,6 @@
 {
   "name": "@hellocoop/lambda",
-  "version": "2.8.0",
+  "version": "2.8.1",
   "description": "Lambda SDK for Hellō https://hello.dev",
   "repository": {
     "type": "git",
@@ -34,7 +34,7 @@
     "node": ">=22"
   },
   "dependencies": {
-    "@hellocoop/api": "^2.4.0",
+    "@hellocoop/api": "^2.4.2",
     "cookie": "^1.0.1"
   },
   "devDependencies": {
