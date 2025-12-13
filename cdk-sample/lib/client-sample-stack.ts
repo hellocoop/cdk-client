@@ -40,7 +40,7 @@ const HELLO_API_ROUTE = '/api/hellocoop' // this is the default value
 const PROVIDER_HINTS: ProviderHint[] = ['github','apple--'] // add github, and demote apple
 
 // optionally override the default value - see https://www.hello.dev/docs/scopes/
-const SCOPES: Scope[] = ['openid', 'email', 'name', 'picture'] // this is the default value
+const SCOPES: Scope[] = ['openid', 'email', 'given_name', 'family_name', 'picture'] // this is NOT default value
 
 
 export class ClientSampleStack extends cdk.Stack {
