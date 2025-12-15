@@ -45,7 +45,7 @@
     "cc": "npm run canary && cd cdk-sample && npm run canary"
   },
   "devDependencies": {
-    "@hellocoop/definitions": "^1.0.1",
+    "@hellocoop/definitions": "^1.0.12",
     "@types/aws-lambda": "^8.10.134",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/jwk-to-pem": "^2.0.3",
