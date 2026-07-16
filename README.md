@@ -25,6 +25,13 @@ const helloClient = new HelloClientConstruct(this, 'HelloClient', {
     // - Name of the lambda function to trigger on login - ARN is built from current region and account
     loginSyncFunctionArn?: string;
     // - Full ARN of the lambda function to trigger on login - use if lambda is in another region or account
+    commandSyncFunctionName?: string;
+    // - Name of the lambda function to invoke on an OpenID Provider Command - ARN is built from current region and account
+    commandSyncFunctionArn?: string;
+    // - Full ARN of the lambda function to invoke on an OpenID Provider Command - use if lambda is in another region or account
+    commandsSupported?: string[];
+    // - OP Commands your commandSyncFunction supports, eg ['metadata', 'suspend', 'delete']
+    //   advertised in the metadata response; other commands are rejected with unsupported_command
     providerHints?: ProviderHint[]; 
     // - Override default providers to show to new users. See https://www.hello.dev/docs/apis/wallet/#provider_hint
     scopes?: Scope[]; 
@@ -95,6 +102,42 @@ All of the properties are optional:
 }
 ```
 
+## commandSyncFunction
+
+You provide this Lambda to be called when Hellō sends your app an
+[OpenID Provider Command](https://github.com/openid/openid-provider-commands)
+(draft-02) — lifecycle commands such as `suspend`, `delete`, and `invalidate` that
+let you deprovision accounts when they change at Hellō.
+
+The client Lambda's function URL is your app's command endpoint. The client Lambda
+verifies the `command+jwt` command token (signature via the OP's JWKS, `typ`, `aud`,
+issuer, expiry) and answers the `metadata` command itself, advertising your
+`commandsSupported`. Every other supported command is passed to your Lambda as the
+verified command token claims:
+
+```json
+{
+    "iss": "https://issuer.hello.coop",
+    "aud": "https://app.example.com/api/hellocoop",
+    "client_id": "2000a054-aa09-45a3-9f62-26e03ee9dc76",
+    "command": "suspend",
+    "tenant": "personal",
+    "sub": "66752aed-9cc2-4d17-875f-379b1a578f9a",
+    "jti": "jti_MUYT099WI3g0h7MDiRuVMhHA_c7g",
+    "iat": 1727210134,
+    "exp": 1727210434
+}
+```
+
+Your Lambda executes the command (e.g. suspends the user in your system) and returns
+the OPC Command Response, which is passed back to Hellō:
+
+```json
+{
+    "sub": "66752aed-9cc2-4d17-875f-379b1a578f9a",
+    "account_state": "suspended"
+}
+```
 
 ## Client Usage
 
