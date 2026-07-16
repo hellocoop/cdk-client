@@ -2,15 +2,17 @@ import { APIGatewayProxyEventV2, APIGatewayProxyStructuredResultV2, Context } fr
 import { LambdaClient, InvokeCommand } from "@aws-sdk/client-lambda"
 import { Claims } from '@hellocoop/definitions'
 
-import { 
+import {
   router,
-  HelloResponse, 
+  HelloResponse,
   HelloRequest,
-  LoginSyncResponse, 
+  LoginSyncResponse,
   clearAuthCookieParams,
   isConfigured,
   configure,
   Config,
+  Command,
+  CommandClaims,
   PackageMetadata,
 } from '@hellocoop/api'
 
@@ -22,6 +24,8 @@ const { name, version } = parentPackageJson;
 PackageMetadata.setMetadata(name, version);
 
 const LOGIN_SYNC_FUNCTION_ARN = process.env.LOGIN_SYNC_FUNCTION_ARN
+const COMMAND_SYNC_FUNCTION_ARN = process.env.COMMAND_SYNC_FUNCTION_ARN
+const HELLO_COMMANDS_SUPPORTED = process.env.HELLO_COMMANDS_SUPPORTED
 
 const client = new LambdaClient();
 
@@ -73,6 +77,41 @@ const loginSync = async (props: LoginSyncParams):Promise<LoginSyncResponse> => {
   return {}
 }
 
+// forwards a verified OP Command to the developer's command sync Lambda;
+// its response (the account state) becomes the OPC Command Response
+const commandSync = async (res: HelloResponse, claims: CommandClaims): Promise<void> => {
+
+  if (logDebug) console.log('commandSync passed:', JSON.stringify(claims, null, 2));
+
+  const command = new InvokeCommand({
+    FunctionName: COMMAND_SYNC_FUNCTION_ARN,
+    Payload: JSON.stringify(claims),
+    InvocationType: 'RequestResponse',
+  });
+
+  try {
+    const result = await client.send(command);
+    const status = result.$metadata.httpStatusCode
+    if (status !== 200 || result.FunctionError) {
+      console.error(`Error invoking function ${COMMAND_SYNC_FUNCTION_ARN}:`, result);
+      res.status(500)
+      return res.json({ error: 'server_error' })
+    }
+    const responseString = Buffer.from(result.Payload as Uint8Array).toString('utf8');
+    try {
+      const response = JSON.parse(responseString)
+      if (logDebug) console.log(`commandSync response from ${COMMAND_SYNC_FUNCTION_ARN}:`, JSON.stringify(response, null, 2));
+      return res.json(response)
+    } catch (error) {
+      console.error(`Error parsing response "${responseString}" from function ${COMMAND_SYNC_FUNCTION_ARN}:`, error);
+    }
+  } catch (error) {
+    console.error(`Error invoking function ${COMMAND_SYNC_FUNCTION_ARN}:`, error);
+  }
+  res.status(500)
+  return res.json({ error: 'server_error' })
+}
+
 const config: Config = {
   logConfig: !!logDebug,
   cookieDomain: process.env.HELLO_COOKIE_DOMAIN
@@ -80,6 +119,12 @@ const config: Config = {
 
 if (LOGIN_SYNC_FUNCTION_ARN)
   config.loginSync = loginSync
+
+if (COMMAND_SYNC_FUNCTION_ARN) {
+  config.commandHandler = commandSync
+  if (HELLO_COMMANDS_SUPPORTED)
+    config.commandsSupported = HELLO_COMMANDS_SUPPORTED.split(' ') as Command[]
+}
 
 if (!isConfigured)
   configure(config)

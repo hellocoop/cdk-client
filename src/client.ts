@@ -19,6 +19,11 @@ export interface HelloClientConstructProps {
   cookieDomain?: string;
   loginSyncFunctionName?: string;
   loginSyncFunctionArn?: string;
+  commandSyncFunctionName?: string;
+  commandSyncFunctionArn?: string;
+  // OP Commands (besides metadata) the command sync function supports
+  // e.g. ['metadata', 'suspend', 'delete']
+  commandsSupported?: string[];
   functionName?: string;
   hostname?: string;
   helloDomain?: string;
@@ -51,9 +56,13 @@ export class HelloClientConstruct extends Construct {
         }
 
         const { region, account } = cdk.Stack.of(this);
-        const loginSyncFunctionArn = props.loginSyncFunctionArn 
+        const loginSyncFunctionArn = props.loginSyncFunctionArn
           || ( props.loginSyncFunctionName
                 ? `arn:aws:lambda:${region}:${account}:function:${props.loginSyncFunctionName}`
+                : null )
+        const commandSyncFunctionArn = props.commandSyncFunctionArn
+          || ( props.commandSyncFunctionName
+                ? `arn:aws:lambda:${region}:${account}:function:${props.commandSyncFunctionName}`
                 : null )
         const HELLO_COOKIE_SECRET = props.cookieSecret || crypto.randomBytes(32).toString('hex')
         const environment:{[key: string]: string;} = {
@@ -63,6 +72,10 @@ export class HelloClientConstruct extends Construct {
         }
         if (loginSyncFunctionArn)
           environment['LOGIN_SYNC_FUNCTION_ARN'] = loginSyncFunctionArn
+        if (commandSyncFunctionArn)
+          environment['COMMAND_SYNC_FUNCTION_ARN'] = commandSyncFunctionArn
+        if (props.commandsSupported)
+          environment['HELLO_COMMANDS_SUPPORTED'] = props.commandsSupported.join(' ')
         if (props.hostname) 
           environment['HELLO_HOST'] = props.hostname
         if (props.helloDomain)
@@ -99,18 +112,20 @@ export class HelloClientConstruct extends Construct {
           reservedConcurrentExecutions: props.reservedConcurrentExecutions ?? undefined, // Default to undefined if not set
         });
 
-        // if a loginFunctionTrigger is provided, attach a policy to the lambda function
-        // Create a policy statement that grants invoke permission on the target Lambda
-        if (loginSyncFunctionArn) {
+        // if login / command sync functions are provided, attach a policy to the
+        // lambda function granting invoke permission on the target Lambdas
+        const syncFunctionArns = [loginSyncFunctionArn, commandSyncFunctionArn]
+          .filter((arn): arn is string => !!arn)
+        if (syncFunctionArns.length) {
           const policyStatement = new iam.PolicyStatement({
             actions: ['lambda:InvokeFunction'],
-            resources: [loginSyncFunctionArn],
+            resources: syncFunctionArns,
           });
           // Attach the policy statement to the invoking Lambda's execution role
           this.lambdaFunction.role?.attachInlinePolicy(new iam.Policy(this, 'InvokePolicy', {
             statements: [policyStatement],
           }));
-        }  
+        }
 
         this.functionUrl = this.lambdaFunction.addFunctionUrl({
           authType: lambda.FunctionUrlAuthType.NONE, // Publicly accessible
