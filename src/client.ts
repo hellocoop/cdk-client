@@ -51,8 +51,8 @@ export class HelloClientConstruct extends Construct {
     constructor(scope: Construct, id: string, props: HelloClientConstructProps) {
         super(scope, id);
 
-        if (!lambda.Runtime.NODEJS_22_X) {
-          throw new Error('HelloClient requires CDK version 1.168 or later')
+        if (!lambda.Runtime.NODEJS_24_X) {
+          throw new Error('HelloClient requires aws-cdk-lib 2.224.0 or later')
         }
 
         const { region, account } = cdk.Stack.of(this);
@@ -104,7 +104,7 @@ export class HelloClientConstruct extends Construct {
         const functionName = props.functionName || 'HelloClient'
         this.lambdaFunction = new lambda.Function(this, functionName, {
           functionName,
-          runtime: lambda.Runtime.NODEJS_22_X,
+          runtime: lambda.Runtime.NODEJS_24_X,
           handler: 'index.handler',
           code: lambda.Code.fromAsset(zipProtocolPath),
           environment,
@@ -146,7 +146,7 @@ export class HelloClientConstruct extends Construct {
   
         this.authorizerLambda = new lambda.Function(this, 'Authorizer', {
           functionName: 'HelloClientAuthorizer',
-          runtime: lambda.Runtime.NODEJS_22_X,
+          runtime: lambda.Runtime.NODEJS_24_X,
           code: lambda.Code.fromAsset(zipAuthorizerPath),
           handler: 'index.handler',
           environment: authorizerEnvironment,

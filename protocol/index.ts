@@ -16,7 +16,7 @@ import {
   PackageMetadata,
 } from '@hellocoop/api'
 
-import { serialize } from 'cookie'
+import { stringifySetCookie } from 'cookie'
 
 // set name and version to provide in metadata
 import parentPackageJson from './package.json'
@@ -182,7 +182,7 @@ const convertToHelloResponse = ( response: APIGatewayProxyStructuredResultV2 ): 
       clearAuth: () => {
           const { name, value, options } = clearAuthCookieParams()
           if (!response?.cookies) response.cookies = []
-          response.cookies.push(serialize(name, value, options))
+          response.cookies.push(stringifySetCookie({ name, value, ...options }))
       },
       send,
       json: (data: any) => {
@@ -203,7 +203,7 @@ console.log('redirect reply:', JSON.stringify(response, null, 2));
       },
       setCookie: (name: string, value: string, options: any) => {
         if (!response?.cookies) response.cookies = []
-        response.cookies.push(serialize(name, value, options))
+        response.cookies.push(stringifySetCookie({ name, value, ...options }))
       },
       getHeaders: () => response?.headers || {} as any,
       setHeader: (name: string, value: string | string[]) => {
