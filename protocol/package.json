@@ -36,8 +36,5 @@
   "dependencies": {
     "@hellocoop/api": "^2.6.0",
     "cookie": "^2.0.1"
-  },
-  "devDependencies": {
-    "@types/cookie": "^1.0.0"
   }
 }
