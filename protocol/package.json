@@ -31,7 +31,7 @@
     "build": "npm run sync-version && npm i @hellocoop/api@latest && npx tsc && zip -q -r ../dist/protocol.zip . -i '*.js' -i '*.json'"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   },
   "dependencies": {
     "@hellocoop/api": "^2.6.0",

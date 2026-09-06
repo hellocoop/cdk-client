@@ -13,7 +13,7 @@ export class LoginSyncStack extends cdk.Stack {
 
     this.lambdaFunction = new lambda.Function(this, LOGIN_SYNC_LAMBDA, {
         functionName: LOGIN_SYNC_LAMBDA,
-        runtime: lambda.Runtime.NODEJS_22_X, 
+        runtime: lambda.Runtime.NODEJS_24_X, 
         handler: 'index.handler',
         code: lambda.Code.fromAsset('lambdas/sample-login-sync'),      
     });
